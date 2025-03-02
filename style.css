@@ -1,0 +1,97 @@
+#game-container {
+    width: 80%;
+    margin: 20px auto;
+    border: 2px solid #333;
+    padding: 20px;
+    background-color: #f0f0f0;
+}
+
+#table {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#community-cards {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+/* ... (your existing CSS) */
+
+#community-cards div img,
+.player img {
+    width: 50px; /* Adjust as needed */
+    height: auto; /* Maintain aspect ratio */
+}
+
+/* ... (your existing CSS) */
+
+#players {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    margin-bottom: 20px;
+}
+
+.player {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 5px;
+    width: 200px;
+    text-align: center;
+    background-color: white;
+}
+
+#action-buttons {
+    text-align: center;
+}
+
+#action-buttons button {
+    padding: 8px 15px;
+    margin: 5px;
+    cursor: pointer;
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 5px;
+}
+
+#action-buttons input[type="number"] {
+  padding: 8px;
+  margin: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#message {
+    text-align: center;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+#player-input{
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  #player-input input[type="text"]{
+    padding: 8px;
+    margin: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  #player-input button{
+    padding: 8px 15px;
+    margin: 5px;
+    cursor: pointer;
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 5px;
+  }

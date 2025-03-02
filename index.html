@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pokerdex</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Pokerdex</h1>
+
+    <div id="player-input">
+        <input type="text" id="player-name-input" placeholder="Enter player name">
+        <button id="add-player-btn">Add Player</button>
+        <button id="start-game-btn">Start Game</button>
+        
+        
+    </div>
+
+    <div id="game-container">
+        <div id="table">
+            <div id="community-cards"></div>
+            <div id="pot"></div>
+            <div id="round"></div>
+            <div id="currentBet"></div>
+        </div>
+        <div id="players"></div>
+        <div id="message"></div>
+       <div id="action-buttons">
+    <button id="fold-btn">Fold</button>
+    <button id="check-btn">Check</button>  <button id="call-btn">Call</button>
+    <input type="number" id="bet-input" placeholder="Bet Amount">
+    <button id="bet-btn">Bet</button>
+    <button id="raise-btn">Raise</button>
+    <button id="restart-btn">Restart</button>
+</div>
+    </div>
+
+    <script src="server.js"></script>
+</body>
+</html>
