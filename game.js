@@ -654,15 +654,6 @@ restartBtn.onclick = function(){
 };
 
 
-module.exports = {
-    players,
-    tableCards,
-    pot,
-    currentBet,
-    round,
-    startGame,
-    createPlayer
-};
 const socket = new WebSocket("wss://pokerdex-server.onrender.com");
 
 socket.onopen = () => {
