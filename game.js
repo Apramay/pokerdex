@@ -676,17 +676,14 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("Player input elements not found!");
     }
 
-    socket.onmessage = (event) => {
-        const data = JSON.parse(event.data);
+   socket.onmessage = function(event) {
+    let data = JSON.parse(event.data);
+    
+    if (data.type === "updatePlayers") {
+        updatePlayersUI(data.players);
+    }
+};
 
-        if (data.type === "players" && playersList) {
-            playersList.innerHTML = data.players.map(p => `<li>${p}</li>`).join('');
-        } else if (data.type === "move") {
-            console.log(`${data.player} ${data.move} with ${data.amount}`);
-        } else if (data.type === "error") {
-            alert(data.message);
-        }
-    };
 
     const betBtn = document.getElementById("bet-btn");
     const betInput = document.getElementById("bet-input");
