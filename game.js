@@ -656,18 +656,18 @@ restartBtn.onclick = function(){
 
 const socket = new WebSocket("wss://pokerdex-server.onrender.com");
 
-ws.onopen = () => {
+socket.onopen = () => {
     console.log("Connected to WebSocket server");
 };
 
 document.getElementById("addPlayerBtn").addEventListener("click", function () {
     const playerName = document.getElementById("playerNameInput").value;
     if (playerName) {
-        ws.send(JSON.stringify({ type: "join", name: playerName }));
+        socket.send(JSON.stringify({ type: "join", name: playerName }));
     }
 });
 
-ws.onmessage = (event) => {
+socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
 
     if (data.type === "players") {
@@ -682,5 +682,5 @@ ws.onmessage = (event) => {
 // Handle player moves (bet, fold, etc.)
 document.getElementById("betBtn").addEventListener("click", function () {
     const betAmount = document.getElementById("betInput").value;
-    ws.send(JSON.stringify({ type: "move", name: "Player", move: "bet", amount: betAmount }));
+    socket.send(JSON.stringify({ type: "move", name: "Player", move: "bet", amount: betAmount }));
 });
