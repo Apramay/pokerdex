@@ -654,25 +654,33 @@ restartBtn.onclick = function(){
 };
 
 
-window.onload = function () {
+document.addEventListener("DOMContentLoaded", function () {
     const socket = new WebSocket("wss://pokerdex-server.onrender.com");
 
     socket.onopen = () => {
         console.log("Connected to WebSocket server");
     };
 
-    document.getElementById("add-player-btn").addEventListener("click", function () {
-        const playerName = document.getElementById("player-name-input").value;
-        if (playerName) {
-            socket.send(JSON.stringify({ type: "join", name: playerName }));
-        }
-    });
+    const addPlayerBtn = document.getElementById("add-player-btn");
+    const playerNameInput = document.getElementById("player-name-input");
+    const playersList = document.getElementById("players");
+
+    if (addPlayerBtn && playerNameInput) {
+        addPlayerBtn.addEventListener("click", function () {
+            const playerName = playerNameInput.value;
+            if (playerName) {
+                socket.send(JSON.stringify({ type: "join", name: playerName }));
+            }
+        });
+    } else {
+        console.error("Player input elements not found!");
+    }
 
     socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
 
-        if (data.type === "players") {
-            document.getElementById("players").innerHTML = data.players.map(p => `<li>${p}</li>`).join('');
+        if (data.type === "players" && playersList) {
+            playersList.innerHTML = data.players.map(p => `<li>${p}</li>`).join('');
         } else if (data.type === "move") {
             console.log(`${data.player} ${data.move} with ${data.amount}`);
         } else if (data.type === "error") {
@@ -680,9 +688,15 @@ window.onload = function () {
         }
     };
 
-    // Handle player moves (bet, fold, etc.)
-    document.getElementById("bet-btn").addEventListener("click", function () {
-        const betAmount = document.getElementById("bet-input").value;
-        socket.send(JSON.stringify({ type: "move", name: "Player", move: "bet", amount: betAmount }));
-    });
-};
+    const betBtn = document.getElementById("bet-btn");
+    const betInput = document.getElementById("bet-input");
+
+    if (betBtn && betInput) {
+        betBtn.addEventListener("click", function () {
+            const betAmount = betInput.value;
+            socket.send(JSON.stringify({ type: "move", name: "Player", move: "bet", amount: betAmount }));
+        });
+    } else {
+        console.error("Bet input elements not found!");
+    }
+});
