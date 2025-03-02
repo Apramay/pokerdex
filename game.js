@@ -690,13 +690,16 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
    socket.onmessage = function(event) {
-    console.log("Received message from WebSocket:", event.data); // Log raw data
+    console.log("Received message from WebSocket:", event.data); // Debugging
+
     let data = JSON.parse(event.data);
+
     if (data.type === "updatePlayers") {
-        console.log("Updating players UI with:", data.players); // Debug player list
-        updatePlayersUI(data.players);
+        console.log("Updating players list:", data.players);
+        updatePlayersUI(data.players); // Call the function
     }
 };
+
 
 
     const betBtn = document.getElementById("bet-btn");
