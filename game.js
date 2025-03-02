@@ -618,6 +618,19 @@ function updateUI() {
     document.getElementById("round").textContent = "Round: " + round;
     document.getElementById("currentBet").textContent = "Current Bet: " + currentBet;
 }
+function updatePlayersUI(players) {
+    console.log("Updating players UI with:", players); // Debugging
+
+    const playersDiv = document.getElementById("players");
+    playersDiv.innerHTML = ""; // Clear existing players list
+
+    players.forEach(player => {
+        let playerDiv = document.createElement("div");
+        playerDiv.classList.add("player");
+        playerDiv.textContent = player; // Show player name
+        playersDiv.appendChild(playerDiv);
+    });
+}
 
 function displayMessage(message) {
     messageDiv.textContent = message;
