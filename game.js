@@ -660,7 +660,7 @@ socket.onopen = () => {
     console.log("Connected to WebSocket server");
 };
 
-document.getElementById("addPlayerBtn").addEventListener("click", function () {
+document.getElementById("add-player-btn").addEventListener("click", function () {
     const playerName = document.getElementById("playerNameInput").value;
     if (playerName) {
         socket.send(JSON.stringify({ type: "join", name: playerName }));
