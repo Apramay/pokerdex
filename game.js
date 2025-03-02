@@ -654,33 +654,35 @@ restartBtn.onclick = function(){
 };
 
 
-const socket = new WebSocket("wss://pokerdex-server.onrender.com");
+window.onload = function () {
+    const socket = new WebSocket("wss://pokerdex-server.onrender.com");
 
-socket.onopen = () => {
-    console.log("Connected to WebSocket server");
+    socket.onopen = () => {
+        console.log("Connected to WebSocket server");
+    };
+
+    document.getElementById("add-player-btn").addEventListener("click", function () {
+        const playerName = document.getElementById("player-name-input").value;
+        if (playerName) {
+            socket.send(JSON.stringify({ type: "join", name: playerName }));
+        }
+    });
+
+    socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        if (data.type === "players") {
+            document.getElementById("players").innerHTML = data.players.map(p => `<li>${p}</li>`).join('');
+        } else if (data.type === "move") {
+            console.log(`${data.player} ${data.move} with ${data.amount}`);
+        } else if (data.type === "error") {
+            alert(data.message);
+        }
+    };
+
+    // Handle player moves (bet, fold, etc.)
+    document.getElementById("bet-btn").addEventListener("click", function () {
+        const betAmount = document.getElementById("bet-input").value;
+        socket.send(JSON.stringify({ type: "move", name: "Player", move: "bet", amount: betAmount }));
+    });
 };
-
-document.getElementById("add-player-btn").addEventListener("click", function () {
-    const playerName = document.getElementById("playerNameInput").value;
-    if (playerName) {
-        socket.send(JSON.stringify({ type: "join", name: playerName }));
-    }
-});
-
-socket.onmessage = (event) => {
-    const data = JSON.parse(event.data);
-
-    if (data.type === "players") {
-        document.getElementById("playersList").innerHTML = data.players.map(p => `<li>${p}</li>`).join('');
-    } else if (data.type === "move") {
-        console.log(`${data.player} ${data.move} with ${data.amount}`);
-    } else if (data.type === "error") {
-        alert(data.message);
-    }
-};
-
-// Handle player moves (bet, fold, etc.)
-document.getElementById("betBtn").addEventListener("click", function () {
-    const betAmount = document.getElementById("betInput").value;
-    socket.send(JSON.stringify({ type: "move", name: "Player", move: "bet", amount: betAmount }));
-});
