@@ -663,3 +663,18 @@ module.exports = {
     startGame,
     createPlayer
 };
+const socket = new WebSocket("wss://pokerdex-server.onrender.com");
+
+socket.onopen = () => {
+    console.log("Connected to server");
+    socket.send(JSON.stringify({ type: "join", name: "Player1" }));
+};
+
+socket.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    if (data.type === "players") {
+        console.log("Current Players:", data.players);
+        document.getElementById("players").innerHTML = 
+            data.players.map(player => `<div>${player}</div>`).join("");
+    }
+};
