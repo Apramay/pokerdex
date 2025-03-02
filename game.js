@@ -677,9 +677,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
    socket.onmessage = function(event) {
+    console.log("Received message from WebSocket:", event.data); // Log raw data
     let data = JSON.parse(event.data);
-    
     if (data.type === "updatePlayers") {
+        console.log("Updating players UI with:", data.players); // Debug player list
         updatePlayersUI(data.players);
     }
 };
