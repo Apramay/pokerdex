@@ -656,16 +656,31 @@ restartBtn.onclick = function(){
 
 const socket = new WebSocket("wss://pokerdex-server.onrender.com");
 
-socket.onopen = () => {
-    console.log("Connected to server");
-    socket.send(JSON.stringify({ type: "join", name: "Player1" }));
+ws.onopen = () => {
+    console.log("Connected to WebSocket server");
 };
 
-socket.onmessage = (event) => {
+document.getElementById("addPlayerBtn").addEventListener("click", function () {
+    const playerName = document.getElementById("playerNameInput").value;
+    if (playerName) {
+        ws.send(JSON.stringify({ type: "join", name: playerName }));
+    }
+});
+
+ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
+
     if (data.type === "players") {
-        console.log("Current Players:", data.players);
-        document.getElementById("players").innerHTML = 
-            data.players.map(player => `<div>${player}</div>`).join("");
+        document.getElementById("playersList").innerHTML = data.players.map(p => `<li>${p}</li>`).join('');
+    } else if (data.type === "move") {
+        console.log(`${data.player} ${data.move} with ${data.amount}`);
+    } else if (data.type === "error") {
+        alert(data.message);
     }
 };
+
+// Handle player moves (bet, fold, etc.)
+document.getElementById("betBtn").addEventListener("click", function () {
+    const betAmount = document.getElementById("betInput").value;
+    ws.send(JSON.stringify({ type: "move", name: "Player", move: "bet", amount: betAmount }));
+});
