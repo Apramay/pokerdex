@@ -661,22 +661,28 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("✅ Connected to WebSocket server");
     };
 
-    const addPlayerBtn = document.getElementById("add-player-btn");
-    const playerNameInput = document.getElementById("player-name-input");
+    // Wait until the DOM is fully loaded before selecting elements
+    setTimeout(() => {
+        const addPlayerBtn = document.getElementById("add-player-btn");
+        const playerNameInput = document.getElementById("player-name-input");
 
-    if (addPlayerBtn && playerNameInput) {
-        addPlayerBtn.addEventListener("click", function () {
-            const playerName = playerNameInput.value;
-            if (playerName) {
-                console.log(`📤 Sending join request for: ${playerName}`);
-                socket.send(JSON.stringify({ type: "join", name: playerName }));
-            } else {
-                console.warn("⚠️ No player name entered!");
-            }
-        });
-    } else {
-        console.error("❌ Player input elements not found!");
-    }
+        console.log("🔍 Checking elements:", addPlayerBtn, playerNameInput);
+
+        if (addPlayerBtn && playerNameInput) {
+            addPlayerBtn.addEventListener("click", function () {
+                const playerName = playerNameInput.value.trim();
+                if (playerName) {
+                    console.log(`📤 Sending join request for: ${playerName}`);
+                    socket.send(JSON.stringify({ type: "join", name: playerName }));
+                    playerNameInput.value = ""; // Clear input after sending
+                } else {
+                    console.warn("⚠️ No player name entered!");
+                }
+            });
+        } else {
+            console.error("❌ Player input elements not found!");
+        }
+    }, 500); // Small delay to ensure elements are loaded
 
     socket.onmessage = function(event) {
         console.log("📩 Received message from WebSocket:", event.data);
