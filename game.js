@@ -35,11 +35,9 @@ function dealHand(deck, numCards) {
 function displayCard(card) {
     const rank = card.rank;
     const suit = card.suit;
-   const imageName = `${rank}_of_${suit}.png`;
-return `<img src="https://github.com/Apramay/pokerdex/raw/main/cards/10_of_clubs.png" alt="10 of Clubs">`;
-
+    const imageName = `${rank}_of_${suit}.png`;
+    return `<img src="https://github.com/Apramay/pokerdex/raw/main/cards/${imageName}" alt="${rank} of ${suit}">`;
 }
-
 function displayHand(hand) {
     return hand.map(displayCard).join(", ");
 }
