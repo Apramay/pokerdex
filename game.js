@@ -618,19 +618,7 @@ function updateUI() {
     document.getElementById("round").textContent = "Round: " + round;
     document.getElementById("currentBet").textContent = "Current Bet: " + currentBet;
 }
-function updatePlayersUI(players) {
-    console.log("Updating players UI with:", players); // Debugging
 
-    const playersDiv = document.getElementById("players");
-    playersDiv.innerHTML = ""; // Clear existing players list
-
-    players.forEach(player => {
-        let playerDiv = document.createElement("div");
-        playerDiv.classList.add("player");
-        playerDiv.textContent = player; // Show player name
-        playersDiv.appendChild(playerDiv);
-    });
-}
 
 function displayMessage(message) {
     messageDiv.textContent = message;
@@ -666,7 +654,6 @@ restartBtn.onclick = function(){
     updateUI();
 };
 
-
 document.addEventListener("DOMContentLoaded", function () {
     const socket = new WebSocket("wss://pokerdex-server.onrender.com");
 
@@ -689,18 +676,16 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("Player input elements not found!");
     }
 
-   socket.onmessage = function(event) {
-    console.log("Received message from WebSocket:", event.data); // Debugging
+    socket.onmessage = function(event) {
+        console.log("Received message from WebSocket:", event.data); // Debugging
 
-    let data = JSON.parse(event.data);
+        let data = JSON.parse(event.data);
 
-    if (data.type === "updatePlayers") {
-        console.log("Updating players list:", data.players);
-        updatePlayersUI(data.players); // Call the function
-    }
-};
-
-
+        if (data.type === "updatePlayers") {
+            console.log("Updating players list:", data.players);
+            updatePlayersUI(data.players); // Call the function
+        }
+    };
 
     const betBtn = document.getElementById("bet-btn");
     const betInput = document.getElementById("bet-input");
@@ -714,3 +699,22 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("Bet input elements not found!");
     }
 });
+
+// 💡 Add this function inside game.js
+function updatePlayersUI(players) {
+    console.log("Updating players UI with:", players); // Debugging
+
+    const playersList = document.getElementById("players");
+    if (!playersList) {
+        console.error("Players list element not found!");
+        return;
+    }
+
+    playersList.innerHTML = ""; // Clear old list
+
+    players.forEach(player => {
+        const playerDiv = document.createElement("div");
+        playerDiv.textContent = `${player.name} - Tokens: ${player.chips}`;
+        playersList.appendChild(playerDiv);
+    });
+}
