@@ -35,8 +35,9 @@ function dealHand(deck, numCards) {
 function displayCard(card) {
     const rank = card.rank;
     const suit = card.suit;
-    const imageName = `${rank}_of_${suit}.png`;
-    return `<img src="cards/${imageName}" alt="${rank} of ${suit}">`;
+   const imageName = `${rank}_of_${suit}.png`;
+return `<img src="https://github.com/apramaygyan/pokerdex/blob/main/cards/${imageName}" alt="${rank} of ${suit}">`;
+
 }
 
 function displayHand(hand) {
