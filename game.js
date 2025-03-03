@@ -700,11 +700,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log("🔄 Updating players list:", data.players);
                 updateUI(data.players); // ✅ Use `updateUI()` to update all UI elements
             }
-            if (data.type === "startGame") {
-            console.log("🎲 Game is starting...");
-            startGame(data.players.map(p => p.name), 1000); // Start game for all clients
-            updateUI(); // Update UI after game starts
-            }
+            
         } catch (error) {
             console.error("❌ Error parsing message:", error);
         }
