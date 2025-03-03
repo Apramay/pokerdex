@@ -658,63 +658,62 @@ document.addEventListener("DOMContentLoaded", function () {
     const socket = new WebSocket("wss://pokerdex-server.onrender.com");
 
     socket.onopen = () => {
-        console.log("Connected to WebSocket server");
+        console.log("✅ Connected to WebSocket server");
     };
 
+    // DOM elements
     const addPlayerBtn = document.getElementById("add-player-btn");
     const playerNameInput = document.getElementById("player-name-input");
     const playersList = document.getElementById("players");
 
     if (addPlayerBtn && playerNameInput) {
         addPlayerBtn.addEventListener("click", function () {
-            const playerName = playerNameInput.value;
+            const playerName = playerNameInput.value.trim();
             if (playerName) {
-                socket.send(JSON.stringify({ type: "join", name: playerName }));
+                const message = JSON.stringify({ type: "join", name: playerName });
+                console.log("📤 Sending to WebSocket:", message);
+                socket.send(message);
+            } else {
+                console.warn("⚠️ Player name is empty!");
             }
         });
     } else {
-        console.error("Player input elements not found!");
+        console.error("❌ Player input elements not found!");
     }
 
-    socket.onmessage = function(event) {
-        console.log("Received message from WebSocket:", event.data); // Debugging
-
-        let data = JSON.parse(event.data);
+    // Handle incoming WebSocket messages
+    socket.onmessage = function (event) {
+        console.log("📩 Received message from WebSocket:", event.data);
+        let data;
+        try {
+            data = JSON.parse(event.data);
+        } catch (error) {
+            console.error("❌ Error parsing message:", error);
+            return;
+        }
 
         if (data.type === "updatePlayers") {
-            console.log("Updating players list:", data.players);
-            updatePlayersUI(data.players); // Call the function
+            console.log("🔄 Updating players list:", data.players);
+            updatePlayersUI(data.players);
         }
     };
 
-    const betBtn = document.getElementById("bet-btn");
-    const betInput = document.getElementById("bet-input");
+    // Function to update players in UI
+    function updatePlayersUI(players) {
+        console.log("🖥 Updating players UI with:", players);
 
-    if (betBtn && betInput) {
-        betBtn.addEventListener("click", function () {
-            const betAmount = betInput.value;
-            socket.send(JSON.stringify({ type: "move", name: "Player", move: "bet", amount: betAmount }));
+        if (!playersList) {
+            console.error("❌ Players list element not found!");
+            return;
+        }
+
+        playersList.innerHTML = ""; // Clear old list
+
+        players.forEach(player => {
+            const playerDiv = document.createElement("div");
+            playerDiv.textContent = `${player.name} - Tokens: ${player.chips ?? "Unknown"}`;
+            playersList.appendChild(playerDiv);
         });
-    } else {
-        console.error("Bet input elements not found!");
     }
 });
 
-// 💡 Add this function inside game.js
-function updatePlayersUI(players) {
-    console.log("Updating players UI with:", players); // Debugging
-
-    const playersList = document.getElementById("players");
-    if (!playersList) {
-        console.error("Players list element not found!");
-        return;
-    }
-
-    playersList.innerHTML = ""; // Clear old list
-
-    players.forEach(player => {
-        const playerDiv = document.createElement("div");
-        playerDiv.textContent = `${player.name} - Tokens: ${player.chips}`;
-        playersList.appendChild(playerDiv);
-    });
-}
