@@ -658,52 +658,54 @@ document.addEventListener("DOMContentLoaded", function () {
     const socket = new WebSocket("wss://pokerdex-server.onrender.com");
 
     socket.onopen = () => {
-        console.log("Connected to WebSocket server");
+        console.log("✅ Connected to WebSocket server");
     };
 
-    // Get UI elements
     const addPlayerBtn = document.getElementById("add-player-btn");
     const playerNameInput = document.getElementById("player-name-input");
-    const playersList = document.getElementById("players");
 
     if (addPlayerBtn && playerNameInput) {
         addPlayerBtn.addEventListener("click", function () {
-            const playerName = playerNameInput.value.trim();
+            const playerName = playerNameInput.value;
             if (playerName) {
-                console.log(`Sending join request for: ${playerName}`);
+                console.log(`📤 Sending join request for: ${playerName}`);
                 socket.send(JSON.stringify({ type: "join", name: playerName }));
-                playerNameInput.value = ""; // Clear input field
+            } else {
+                console.warn("⚠️ No player name entered!");
             }
         });
     } else {
-        console.error("Player input elements not found!");
+        console.error("❌ Player input elements not found!");
     }
 
-    // Listen for WebSocket messages
-    socket.onmessage = function (event) {
-        console.log("Received message from server:", event.data);
-        
-        let data = JSON.parse(event.data);
-        if (data.type === "updatePlayers") {
-            updatePlayersUI(data.players);
+    socket.onmessage = function(event) {
+        console.log("📩 Received message from WebSocket:", event.data);
+
+        try {
+            let data = JSON.parse(event.data);
+            if (data.type === "updatePlayers") {
+                console.log("🔄 Updating players list:", data.players);
+                updatePlayersUI(data.players);
+            }
+        } catch (error) {
+            console.error("❌ Error parsing message:", error);
         }
     };
-
-    // Function to update UI
-    function updatePlayersUI(players) {
-        console.log("Updating players UI with:", players);
-        
-        if (!playersList) {
-            console.error("Players list element not found!");
-            return;
-        }
-
-        playersList.innerHTML = ""; // Clear list
-
-        players.forEach(player => {
-            const playerDiv = document.createElement("div");
-            playerDiv.textContent = `${player.name} - Tokens: ${player.chips}`;
-            playersList.appendChild(playerDiv);
-        });
-    }
 });
+
+function updatePlayersUI(players) {
+    console.log("🎨 Updating players UI with:", players);
+
+    const playersList = document.getElementById("players");
+    if (!playersList) {
+        console.error("❌ Players list element not found!");
+        return;
+    }
+
+    playersList.innerHTML = ""; // Clear old list
+    players.forEach(player => {
+        const playerDiv = document.createElement("div");
+        playerDiv.textContent = `${player.name} - Tokens: ${player.chips}`;
+        playersList.appendChild(playerDiv);
+    });
+}
