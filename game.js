@@ -36,7 +36,7 @@ function displayCard(card) {
     const rank = card.rank;
     const suit = card.suit;
    const imageName = `${rank}_of_${suit}.png`;
-return `<img src="https://github.com/apramaygyan/pokerdex/raw/main/cards/${imageName}" alt="${rank} of ${suit}">`;
+return `<img src="https://github.com/Apramay/pokerdex/raw/main/cards/10_of_clubs.png" alt="10 of Clubs">`;
 
 }
 
