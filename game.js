@@ -36,7 +36,8 @@ function displayCard(card) {
     const rank = card.rank;
     const suit = card.suit;
     const imageName = `${rank}_of_${suit}.png`;
-    return `<img src="cards/${imageName}" alt="${rank} of ${suit}">`;
+
+    return `<img src="./cards/${imageName}" alt="${rank} of ${suit}" onerror="this.onerror=null; this.src='./cards/default.png';">`;
 }
 
 
