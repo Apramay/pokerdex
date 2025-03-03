@@ -654,7 +654,6 @@ restartBtn.onclick = function(){
     playerNameInput.value = "";
     updateUI();
 };
-
 document.addEventListener("DOMContentLoaded", function () {
     const socket = new WebSocket("wss://pokerdex-server.onrender.com");
 
@@ -664,35 +663,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const addPlayerBtn = document.getElementById("add-player-btn");
     const playerNameInput = document.getElementById("player-name-input");
-    const playersList = document.getElementById("players");
 
     if (addPlayerBtn && playerNameInput) {
         addPlayerBtn.addEventListener("click", function () {
-            const playerName = playerNameInput.value;
+            const playerName = playerNameInput.value.trim();
             if (playerName) {
                 console.log(`Sending join request for: ${playerName}`);
                 socket.send(JSON.stringify({ type: "join", name: playerName }));
-                playerNameInput.value = ""; // Clear input after sending
+                playerNameInput.value = "";
             }
         });
     } else {
         console.error("Player input elements not found!");
     }
 
-    socket.onmessage = function(event) {
+    socket.onmessage = function (event) {
         console.log("Received message from WebSocket:", event.data);
-
+        
         let data = JSON.parse(event.data);
         if (data.type === "updatePlayers") {
-            console.log("Updating players list:", data.players);
             updatePlayersUI(data.players);
         }
     };
 
     function updatePlayersUI(players) {
         console.log("Updating players UI with:", players);
-        
         const playersList = document.getElementById("players");
+        
         if (!playersList) {
             console.error("Players list element not found!");
             return;
