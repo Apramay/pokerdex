@@ -672,42 +672,35 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("✅ Connected to WebSocket server");
     };
 
-    // Wait until the DOM is fully loaded before selecting elements
-    setTimeout(() => {
-        const addPlayerBtn = document.getElementById("add-player-btn");
-        const playerNameInput = document.getElementById("player-name-input");
+    const addPlayerBtn = document.getElementById("add-player-btn");
+    const playerNameInput = document.getElementById("player-name-input");
 
-        console.log("🔍 Checking elements:", addPlayerBtn, playerNameInput);
-
-        if (addPlayerBtn && playerNameInput) {
-            addPlayerBtn.addEventListener("click", function () {
-                const playerName = playerNameInput.value.trim();
-                if (playerName) {
-                    console.log(`📤 Sending join request for: ${playerName}`);
-                    socket.send(JSON.stringify({ type: "join", name: playerName }));
-                    playerNameInput.value = ""; // Clear input after sending
-                } else {
-                    console.warn("⚠️ No player name entered!");
-                }
-            });
-        } else {
-            console.error("❌ Player input elements not found!");
-        }
-    }, 500); // Small delay to ensure elements are loaded
+    if (addPlayerBtn && playerNameInput) {
+        addPlayerBtn.onclick = function () {  // ✅ Use `onclick` instead of `addEventListener`
+            const playerName = playerNameInput.value.trim();
+            if (playerName) {
+                console.log(`📤 Sending join request for: ${playerName}`);
+                socket.send(JSON.stringify({ type: "join", name: playerName }));
+                playerNameInput.value = ""; // ✅ Clear input after sending
+            } else {
+                console.warn("⚠️ No player name entered!");
+            }
+        };
+    } else {
+        console.error("❌ Player input elements not found!");
+    }
 
     socket.onmessage = function(event) {
-    console.log("📩 Received message from WebSocket:", event.data);
+        console.log("📩 Received message from WebSocket:", event.data);
 
-    try {
-        let data = JSON.parse(event.data);
-        if (data.type === "updatePlayers") {
-            console.log("🔄 Updating players list:", data.players);
-            updateUI(data.players); // Merge WebSocket player updates into UI
+        try {
+            let data = JSON.parse(event.data);
+            if (data.type === "updatePlayers") {
+                console.log("🔄 Updating players list:", data.players);
+                updateUI(data.players); // ✅ Use `updateUI()` to update all UI elements
+            }
+        } catch (error) {
+            console.error("❌ Error parsing message:", error);
         }
-    } catch (error) {
-        console.error("❌ Error parsing message:", error);
-    }
-};
-
+    };
 });
-
