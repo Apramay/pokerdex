@@ -592,7 +592,18 @@ const playerNameInput = document.getElementById("player-name-input");
 const addPlayerBtn = document.getElementById("add-player-btn");
 const startGameBtn = document.getElementById("start-game-btn");
 
-function updateUI() {
+function updateUI(playersFromWebSocket = null) {
+    // Use WebSocket data if available; otherwise, use local players list
+    if (playersFromWebSocket) {
+        players = playersFromWebSocket; 
+    }
+
+    console.log("🎨 Updating players UI with:", players);
+ const playersDiv = document.getElementById("players");
+    if (!playersDiv) {
+        console.error("❌ Players list element not found!");
+        return;
+    }
     playersDiv.innerHTML = "";
     players.forEach((player, index) => {
         let indicators = "";
