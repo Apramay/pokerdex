@@ -696,33 +696,18 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 500); // Small delay to ensure elements are loaded
 
     socket.onmessage = function(event) {
-        console.log("📩 Received message from WebSocket:", event.data);
+    console.log("📩 Received message from WebSocket:", event.data);
 
-        try {
-            let data = JSON.parse(event.data);
-            if (data.type === "updatePlayers") {
-                console.log("🔄 Updating players list:", data.players);
-                updatePlayersUI(data.players);
-            }
-        } catch (error) {
-            console.error("❌ Error parsing message:", error);
+    try {
+        let data = JSON.parse(event.data);
+        if (data.type === "updatePlayers") {
+            console.log("🔄 Updating players list:", data.players);
+            updateUI(data.players); // Merge WebSocket player updates into UI
         }
-    };
+    } catch (error) {
+        console.error("❌ Error parsing message:", error);
+    }
+};
+
 });
 
-function updatePlayersUI(players) {
-    console.log("🎨 Updating players UI with:", players);
-
-    const playersList = document.getElementById("players");
-    if (!playersList) {
-        console.error("❌ Players list element not found!");
-        return;
-    }
-
-    playersList.innerHTML = ""; // Clear old list
-    players.forEach(player => {
-        const playerDiv = document.createElement("div");
-        playerDiv.textContent = `${player.name} - Tokens: ${player.chips}`;
-        playersList.appendChild(playerDiv);
-    });
-}
