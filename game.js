@@ -261,36 +261,61 @@ function startFlopBetting() {
 }
 
 
-function sendAction(action) {
-    socket.send(JSON.stringify({ type: "action", action, name: playerName }));
+function handleAction(action) {
+    action();
+    playersWhoActed.add(players[currentPlayerIndex].name); // Mark player as having acted
+    updateUI();
+    currentPlayerIndex = getNextPlayerIndex(currentPlayerIndex);
+    bettingRound();
 }
 
-function fold() {
-    sendAction({ type: "fold" });
+
+function fold(player) {
+    player.status = "folded";
+    displayMessage(`${player.name} folds.`);
 }
 
-function call() {
-    sendAction({ type: "call" });
-}
-
-function bet() {
-    const amount = parseInt(document.getElementById("bet-input").value);
-    if (!isNaN(amount)) {
-        sendAction({ type: "bet", amount });
-    } else {
-        displayMessage("Invalid bet amount.");
+function call(player) {
+    let amount = Math.min(currentBet - player.currentBet, player.tokens);
+    player.tokens -= amount;
+    player.currentBet += amount;
+    pot += amount;
+    displayMessage(`${player.name} calls.`);
+    if (player.tokens === 0) {
+        player.allIn = true;
     }
 }
 
-function raise() {
-    const amount = parseInt(document.getElementById("bet-input").value);
-    if (!isNaN(amount)) {
-        sendAction({ type: "raise", amount });
-    } else {
-        displayMessage("Invalid raise amount.");
+function bet(player, amount) {
+    if (amount > player.tokens || amount < currentBet) {
+        displayMessage("Invalid bet");
+        return;
+    }
+    player.tokens -= amount;
+    pot += amount;
+    player.currentBet = amount;
+    currentBet = amount;
+    displayMessage(`${player.name} bets ${amount}.`);
+    if (player.tokens === 0) {
+        player.allIn = true;
     }
 }
 
+function raise(player, amount) {
+    if (amount <= currentBet || amount > player.tokens) {
+        displayMessage("Invalid raise");
+        return;
+    }
+    const totalBet = amount;
+    player.tokens -= totalBet - player.currentBet;
+    pot += totalBet - player.currentBet;
+    player.currentBet = totalBet;
+    currentBet = totalBet;
+    displayMessage(`${player.name} raises to ${totalBet}.`);
+    if (player.tokens === 0) {
+        player.allIn = true;
+    }
+}
 
 function check(player) {
     if (currentBet === 0 || player.currentBet === currentBet) {
@@ -568,19 +593,65 @@ const playerNameInput = document.getElementById("player-name-input");
 const addPlayerBtn = document.getElementById("add-player-btn");
 const startGameBtn = document.getElementById("start-game-btn");
 
-function updateUI(players, pot, currentBet, currentPlayerIndex) {
+function updateUI(playersFromWebSocket = null) {
+    if (playersFromWebSocket) {
+        players = playersFromWebSocket;
+    }
+
     const playersDiv = document.getElementById("players");
+    if (!playersDiv) {
+        console.error("❌ Players list element not found!");
+        return;
+    }
     playersDiv.innerHTML = "";
 
     players.forEach((player, index) => {
-        let status = index === currentPlayerIndex ? " (Your Turn)" : "";
-        playersDiv.innerHTML += `<div>${player.name}: ${player.chips} chips ${status}</div>`;
+        let indicators = "";
+        if (index === dealerIndex) indicators += "D ";
+        if (index === (dealerIndex + 1) % players.length) indicators += "SB ";
+        if (index === (dealerIndex + 2) % players.length) indicators += "BB ";
+
+        let handDisplay;
+        if (player.name === getMyPlayerName()) { // Assuming you have a function to get the current player's name
+            handDisplay = player.status === "active" ? displayHand(player.hand) : "Folded";
+        } else {
+            handDisplay = player.status === "active" ? "Hidden Hand" : "Folded";
+        }
+
+        playersDiv.innerHTML += `<div class="player">${indicators}${player.name}: Tokens: ${player.tokens}<br>Hand: ${handDisplay}</div>`;
     });
 
-    document.getElementById("pot").textContent = `Pot: ${pot}`;
-    document.getElementById("currentBet").textContent = `Current Bet: ${currentBet}`;
+    communityCardsDiv.innerHTML = "";
+    tableCards.forEach(card => {
+        communityCardsDiv.innerHTML += `<div>${displayCard(card)}</div>`;
+    });
+
+    potDiv.textContent = `Pot: ${pot}`;
+    messageDiv.textContent = "";
+    document.getElementById("round").textContent = "Round: " + round;
+    document.getElementById("currentBet").textContent = "Current Bet: " + currentBet;
+
+    //Action Buttons
+    if(players[currentPlayerIndex].name === getMyPlayerName()){
+        //show buttons
+        foldBtn.style.display = "inline";
+        checkBtn.style.display = "inline";
+        callBtn.style.display = currentBet > 0 ? "inline" : "none";
+        betBtn.style.display = currentBet === 0 ? "inline" : "none";
+        raiseBtn.style.display = currentBet > 0 ? "inline" : "none";
+    } else {
+        //hide buttons
+        foldBtn.style.display = "none";
+        checkBtn.style.display = "none";
+        callBtn.style.display = "none";
+        betBtn.style.display = "none";
+        raiseBtn.style.display = "none";
+    }
 }
 
+function getMyPlayerName(){
+    return playerNameInput.value;
+}
 
 
 function displayMessage(message) {
@@ -617,20 +688,64 @@ restartBtn.onclick = function(){
     updateUI();
 };
 document.addEventListener("DOMContentLoaded", function () {
-    const socket = new WebSocket("ws://localhost:3000");
+    const socket = new WebSocket("wss://pokerdex-server.onrender.com");
 
-socket.onopen = () => {
-    console.log("✅ Connected to WebSocket server");
-};
+    socket.onopen = () => {
+        console.log("✅ Connected to WebSocket server");
+    };
 
-socket.onmessage = function(event) {
-    let data = JSON.parse(event.data);
-    
-    if (data.type === "updatePlayers") {
-        updateUI(data.players);
+    const addPlayerBtn = document.getElementById("add-player-btn");
+    const playerNameInput = document.getElementById("player-name-input");
+
+    if (addPlayerBtn && playerNameInput) {
+        addPlayerBtn.onclick = function () {  // ✅ Use `onclick` instead of `addEventListener`
+            const playerName = playerNameInput.value.trim();
+            if (playerName) {
+                console.log(`📤 Sending join request for: ${playerName}`);
+                socket.send(JSON.stringify({ type: "join", name: playerName }));
+                playerNameInput.value = ""; // ✅ Clear input after sending
+            } else {
+                console.warn("⚠️ No player name entered!");
+            }
+        };
+    } else {
+        console.error("❌ Player input elements not found!");
     }
-    
-    if (data.type === "gameState") {
-        updateUI(data.players, data.pot, data.currentBet, data.currentPlayerIndex);
+
+    socket.onmessage = function(event) {
+    console.log("📩 Received message from WebSocket:", event.data);
+
+    try {
+        let data = JSON.parse(event.data);
+        if (data.type === "updatePlayers") {
+            console.log("🔄 Updating players list:", data.players);
+            //Only update players data, not hand data.
+            players = data.players;
+            updateUI();
+        } else if (data.type === "playerHand") {
+            //Update only the current player hand.
+            players.forEach((player)=>{
+                if(player.name === data.playerName){
+                    player.hand = data.hand;
+                }
+            });
+            updateUI();
+        } else if (data.type === "communityCards"){
+            tableCards = data.cards;
+            updateUI();
+        } else if (data.type === "potUpdate"){
+            pot = data.pot;
+            updateUI();
+        } else if (data.type === "roundUpdate"){
+            round = data.round;
+            currentBet = data.currentBet;
+            updateUI();
+        } else if (data.type === "message"){
+            displayMessage(data.message);
+        }
+
+    } catch (error) {
+        console.error("❌ Error parsing message:", error);
     }
 };
+});
