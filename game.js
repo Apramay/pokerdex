@@ -35,10 +35,11 @@ function dealHand(deck, numCards) {
 function displayCard(card) {
     const rank = card.rank;
     const suit = card.suit;
-    const imageName = `<span class="math-inline">\{rank\}\_of\_</span>{suit}.png`;
+    const imageName = `${rank}_of_${suit}.png`;
 
-    return `<img src="./cards/<span class="math-inline">\{imageName\}" alt\="</span>{rank} of ${suit}" onerror="this.onerror=null; this.src='./cards/default.png';">`;
+    return `<img src="./cards/${imageName}" alt="${rank} of ${suit}" onerror="this.onerror=null; this.src='./cards/default.png';">`;
 }
+
 
 function displayHand(hand) {
     return hand.map(displayCard).join(", ");
@@ -54,7 +55,6 @@ let round = 0;
 let smallBlindAmount = 10;
 let bigBlindAmount = 20;
 let dealerIndex = 0;
-let socket; // Declare socket variable
 
 function createPlayer(name, tokens) {
     return { name: name, tokens: tokens, hand: [], currentBet: 0, status: "active", allIn: false };
@@ -91,13 +91,15 @@ function setupBlinds() {
     postBlind(players[bigBlindIndex], bigBlindAmount);
 
     currentBet = bigBlindAmount;
-
+    
+    // Start with Under The Gun (UTG), which is the player after the big blind
     currentPlayerIndex = (bigBlindIndex + 1) % players.length;
 
-    playersWhoActed.clear();
+    playersWhoActed.clear(); // Reset players who acted
     updateUI();
     setTimeout(bettingRound, 500);
 }
+
 
 function postBlind(player, amount) {
     const blindAmount = Math.min(amount, player.tokens);
@@ -123,30 +125,33 @@ function getNextPlayerIndex(currentIndex) {
     return nextIndex;
 }
 
-let playersWhoActed = new Set();
+let playersWhoActed = new Set(); // Track players who acted
 
 function bettingRound() {
     let activePlayers = players.filter(p => p.status === "active" && !p.allIn && p.tokens > 0);
 
     if (activePlayers.length <= 1) {
+        console.log("Only one player left, moving to next round.");
         setTimeout(nextRound, 1000);
         return;
     }
 
     if (isBettingRoundOver()) {
+        console.log("All players have acted. Betting round is over.");
         setTimeout(nextRound, 1000);
         return;
     }
 
     const player = players[currentPlayerIndex];
 
+    // If this player has already acted, move to the next one
     if (playersWhoActed.has(player.name) && player.currentBet === currentBet) {
         currentPlayerIndex = getNextPlayerIndex(currentPlayerIndex);
         bettingRound();
         return;
     }
 
-    displayMessage(`Waiting for player ${player.name} to act...`);
+    console.log(`Waiting for player ${player.name} to act...`);
     playerAction(player);
 }
 
@@ -154,11 +159,13 @@ function isBettingRoundOver() {
     let activePlayers = players.filter(p => p.status === "active" && !p.allIn && p.tokens > 0);
 
     if (activePlayers.length <= 1) {
-        return true;
+        return true; // If only one player remains, the round ends.
     }
 
+    // Ensure all active players have matched the current bet
     const allCalled = activePlayers.every(player => player.currentBet === currentBet || player.status === "folded");
 
+    // If all active players have called or folded, the round is over
     if (allCalled && playersWhoActed.size >= activePlayers.length) {
         return true;
     }
@@ -166,11 +173,55 @@ function isBettingRoundOver() {
     return false;
 }
 
+
+function bigBlindCheckRaiseOption() {
+    let bigBlindPlayer = players[((dealerIndex + 2) % players.length)];
+
+    if (currentBet === bigBlindAmount) { 
+        // No raises occurred, so big blind can check
+        displayMessage(`${bigBlindPlayer.name}, you can check or bet.`);
+        checkBtn.style.display = "inline";
+    } else {
+        // Someone raised, so big blind must call or fold
+        displayMessage(`${bigBlindPlayer.name}, you must call or fold.`);
+        checkBtn.style.display = "none";
+    }
+
+    foldBtn.style.display = "inline";
+    callBtn.style.display = "inline";
+    betBtn.style.display = "inline";
+    raiseBtn.style.display = "inline";
+
+    checkBtn.onclick = () => {
+        check(bigBlindPlayer);
+        updateUI();
+        bettingRound();
+    };
+
+    callBtn.onclick = () => {
+        call(bigBlindPlayer);
+        updateUI();
+        bettingRound();
+    };
+
+    raiseBtn.onclick = () => {
+        const amount = parseInt(betInput.value);
+        if (!isNaN(amount)) {
+            raise(bigBlindPlayer, amount);
+            updateUI();
+            bettingRound();
+        } else {
+            displayMessage("Invalid raise amount.");
+        }
+    };
+}
+
 function playerAction(player) {
     displayMessage(`${player.name}, your turn.`);
 
+    // Disable check if there's a bet to call
     if (currentBet > 0 && player.currentBet < currentBet) {
-        checkBtn.style.display = "none";
+        checkBtn.style.display = "none"; 
     } else {
         checkBtn.style.display = "inline";
     }
@@ -180,64 +231,113 @@ function playerAction(player) {
     betBtn.style.display = currentBet === 0 ? "inline" : "none";
     raiseBtn.style.display = currentBet > 0 ? "inline" : "none";
 
-    foldBtn.onclick = () => { fold(player); };
-    callBtn.onclick = () => { call(player); };
+    foldBtn.onclick = () => { handleAction(() => fold(player)); };
+    callBtn.onclick = () => { handleAction(() => call(player)); };
     betBtn.onclick = () => {
         const amount = parseInt(betInput.value);
-        if (!isNaN(amount)) { bet(player, amount); } else { displayMessage("Invalid bet amount."); }
+        if (!isNaN(amount)) { handleAction(() => bet(player, amount)); } else { displayMessage("Invalid bet amount."); }
     };
     raiseBtn.onclick = () => {
         const amount = parseInt(betInput.value);
-        if (!isNaN(amount)) { raise(player, amount); } else { displayMessage("Invalid raise amount."); }
+        if (!isNaN(amount)) { handleAction(() => raise(player, amount)); } else { displayMessage("Invalid raise amount."); }
     };
-    checkBtn.onclick = () => { check(player); };
+    checkBtn.onclick = () => { handleAction(() => check(player)); };
+}
+function startFlopBetting() {
+    currentBet = 0; // Reset betting amount
+
+    // Betting starts from Small Blind
+    currentPlayerIndex = (dealerIndex + 1) % players.length;
+    playersWhoActed.clear();
+
+    // Update action buttons: Only Check or Bet allowed
+    checkBtn.style.display = "inline";
+    betBtn.style.display = "inline";
+    foldBtn.style.display = "none";
+    callBtn.style.display = "none";
+    raiseBtn.style.display = "none";
+
+    bettingRound();
 }
 
+
+function handleAction(action) {
+    action();
+    playersWhoActed.add(players[currentPlayerIndex].name); // Mark player as having acted
+    updateUI();
+    currentPlayerIndex = getNextPlayerIndex(currentPlayerIndex);
+    bettingRound();
+}
+
+
 function fold(player) {
-    if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify({ type: "fold" }));
-    }
+    player.status = "folded";
     displayMessage(`${player.name} folds.`);
 }
 
 function call(player) {
-    if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify({ type: "call" }));
-    }
+    let amount = Math.min(currentBet - player.currentBet, player.tokens);
+    player.tokens -= amount;
+    player.currentBet += amount;
+    pot += amount;
     displayMessage(`${player.name} calls.`);
+    if (player.tokens === 0) {
+        player.allIn = true;
+    }
 }
 
 function bet(player, amount) {
-    if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify({ type: "bet", amount: amount }));
+    if (amount > player.tokens || amount < currentBet) {
+        displayMessage("Invalid bet");
+        return;
     }
+    player.tokens -= amount;
+    pot += amount;
+    player.currentBet = amount;
+    currentBet = amount;
     displayMessage(`${player.name} bets ${amount}.`);
+    if (player.tokens === 0) {
+        player.allIn = true;
+    }
 }
 
 function raise(player, amount) {
-    if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify({ type: "raise", amount: amount }));
+    if (amount <= currentBet || amount > player.tokens) {
+        displayMessage("Invalid raise");
+        return;
     }
-    displayMessage(`${player.name} raises to ${amount}.`);
+    const totalBet = amount;
+    player.tokens -= totalBet - player.currentBet;
+    pot += totalBet - player.currentBet;
+    player.currentBet = totalBet;
+    currentBet = totalBet;
+    displayMessage(`${player.name} raises to ${totalBet}.`);
+    if (player.tokens === 0) {
+        player.allIn = true;
+    }
 }
 
 function check(player) {
-    if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify({ type: "check" }));
+    if (currentBet === 0 || player.currentBet === currentBet) {
+        displayMessage(`${player.name} checks.`);
+    } else {
+        displayMessage("You cannot check when there is a bet.");
     }
-    displayMessage(`${player.name} checks.`);
 }
 
 function nextRound() {
+    console.log("nextRound() called. Current round:", round);
+
     currentBet = 0;
     players.forEach((player) => (player.currentBet = 0));
-    playersWhoActed.clear();
+    playersWhoActed.clear(); // Reset players who acted
 
     if (round === 0) {
         round++;
         tableCards = dealHand(deckForGame, 3);
         displayMessage(`Flop: ${displayHand(tableCards)}`);
 
+        // Betting round starts from Small Blind after the flop
         currentPlayerIndex = (dealerIndex + 1) % players.length;
     } else if (round === 1) {
         round++;
@@ -257,23 +357,37 @@ function nextRound() {
     }
 
     updateUI();
-    setTimeout(bettingRound, 1000);
+    setTimeout(startFlopBetting, 1000); // Ensure betting starts after UI updates
 }
+function startFlopBetting() {
+    currentBet = 0; // Reset betting amount
+
+    // Betting starts from Small Blind
+    currentPlayerIndex = (dealerIndex + 1) % players.length;
+    playersWhoActed.clear();
+
+    bettingRound();
+}
+
+
+
 
 function showdown() {
     displayMessage("Showdown!");
 
-    let activePlayers = players.filter(p => p.status === "active" || p.allIn);
+    let activePlayers = players.filter(p => p.status === "active" || p.allIn); // Only players still in hand
     let winners = determineWinners(activePlayers);
 
+    // Highlight the winner(s) in UI
     winners.forEach(winner => {
         displayMessage(`${winner.name} wins the hand!`);
     });
 
     distributePot();
     updateUI();
-    setTimeout(resetHand, 3000);
+    setTimeout(resetHand, 3000); // Wait before resetting for new hand
 }
+
 
 function distributePot() {
     let eligiblePlayers = players.filter(p => p.status === "active" || p.allIn);
@@ -282,6 +396,7 @@ function distributePot() {
     let totalPot = pot;
     let sidePots = [];
 
+    // Create side pots for players who went all-in
     while (eligiblePlayers.length > 0) {
         const minBet = eligiblePlayers[0].currentBet;
         let potPortion = 0;
@@ -295,6 +410,7 @@ function distributePot() {
         eligiblePlayers = eligiblePlayers.filter(p => p.currentBet > 0);
     }
 
+    // Award each side pot to the correct winners
     sidePots.forEach(sidePot => {
         const winners = determineWinners(sidePot.players);
         const splitPot = Math.floor(sidePot.amount / winners.length);
@@ -305,6 +421,7 @@ function distributePot() {
         });
     });
 
+    // Award any remaining main pot chips
     let remainingPot = totalPot - sidePots.reduce((acc, sp) => acc + sp.amount, 0);
     if (remainingPot > 0) {
         let mainWinners = determineWinners(players.filter(p => p.status === "active"));
@@ -316,11 +433,13 @@ function distributePot() {
     }
 }
 
+
 function determineWinners(playerList) {
+    // Exclude folded players
     let eligiblePlayers = playerList.filter(player => player.status !== "folded");
 
     if (eligiblePlayers.length === 1) {
-        return eligiblePlayers;
+        return eligiblePlayers; // Only one player left, they win by default
     }
 
     const playerHands = eligiblePlayers.map(player => ({
@@ -328,7 +447,7 @@ function determineWinners(playerList) {
         hand: evaluateHand(player.hand.concat(tableCards)),
     }));
 
-    playerHands.sort((a, b) => b.hand.value - a.hand.value);
+    playerHands.sort((a, b) => b.hand.value - a.hand.value); // Sort by hand strength
 
     const bestHandValue = playerHands[0].hand.value;
     return playerHands
@@ -475,32 +594,32 @@ const addPlayerBtn = document.getElementById("add-player-btn");
 const startGameBtn = document.getElementById("start-game-btn");
 
 function updateUI(playersFromWebSocket = null) {
+    // Use WebSocket data if available; otherwise, use local players list
     if (playersFromWebSocket) {
-        players = playersFromWebSocket;
+        players = playersFromWebSocket; 
     }
 
-    const playersDiv = document.getElementById("players");
+    console.log("🎨 Updating players UI with:", players);
+ const playersDiv = document.getElementById("players");
     if (!playersDiv) {
         console.error("❌ Players list element not found!");
         return;
     }
     playersDiv.innerHTML = "";
-
     players.forEach((player, index) => {
         let indicators = "";
         if (index === dealerIndex) indicators += "D ";
         if (index === (dealerIndex + 1) % players.length) indicators += "SB ";
         if (index === (dealerIndex + 2) % players.length) indicators += "BB ";
 
-        let handDisplay;
-        if (player.name === getMyPlayerName()) {
-            handDisplay = player.status === "active" ? displayHand(player.hand) : "Folded";
-        } else {
-            handDisplay = player.status === "active" ? "Hidden Hand" : "Folded";
-        }
-
-        playersDiv.innerHTML += `<div class="player"><span class="math-inline">\{indicators\}</span>{player.name}: Tokens: ${player.tokens}<br>Hand: ${handDisplay}</div>`;
+        playersDiv.innerHTML += `<div class="player">${indicators}${player.name}: Tokens: ${player.tokens}<br>Hand: ${player.status === "active" ? displayHand(player.hand) : "Folded"}</div>`;
     });
+
+    communityCardsDiv.innerHTML = "";
+    tableCards.forEach(card => {
+        communityCardsDiv.innerHTML += `<div>${displayCard(card)}</div>`;
+    });
+
 
     communityCardsDiv.innerHTML = "";
     tableCards.forEach(card => {
@@ -511,31 +630,14 @@ function updateUI(playersFromWebSocket = null) {
     messageDiv.textContent = "";
     document.getElementById("round").textContent = "Round: " + round;
     document.getElementById("currentBet").textContent = "Current Bet: " + currentBet;
-
-    if (players[currentPlayerIndex] && players[currentPlayerIndex].name === getMyPlayerName()) {
-        foldBtn.style.display = "inline";
-        checkBtn.style.display = "inline";
-        callBtn.style.display = currentBet > 0 ? "inline" : "none";
-        betBtn.style.display = currentBet === 0 ? "inline" : "none";
-        raiseBtn.style.display = currentBet > 0 ? "inline" : "none";
-    } else {
-        foldBtn.style.display = "none";
-        checkBtn.style.display = "none";
-        callBtn.style.display = "none";
-        betBtn.style.display = "none";
-        raiseBtn.style.display = "none";
-    }
 }
 
-function getMyPlayerName() {
-    return playerNameInput.value;
-}
 
 function displayMessage(message) {
     messageDiv.textContent = message;
 }
 
-addPlayerBtn.onclick = function () {
+addPlayerBtn.onclick = function() {
     const playerName = playerNameInput.value;
     if (playerName) {
         players.push(createPlayer(playerName, 1000));
@@ -544,11 +646,8 @@ addPlayerBtn.onclick = function () {
     }
 };
 
-startGameBtn.onclick = function () {
+startGameBtn.onclick = function() {
     if (players.length >= 2) {
-        if (socket && socket.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify({ type: "startGame" }));
-        }
         startGame(players.map(p => p.name), 1000);
         updateUI();
     } else {
@@ -556,7 +655,7 @@ startGameBtn.onclick = function () {
     }
 };
 
-restartBtn.onclick = function () {
+restartBtn.onclick = function(){
     players = [];
     tableCards = [];
     pot = 0;
@@ -567,9 +666,8 @@ restartBtn.onclick = function () {
     playerNameInput.value = "";
     updateUI();
 };
-
 document.addEventListener("DOMContentLoaded", function () {
-    socket = new WebSocket("wss://pokerdex-server.onrender.com");
+    const socket = new WebSocket("wss://pokerdex-server.onrender.com");
 
     socket.onopen = () => {
         console.log("✅ Connected to WebSocket server");
@@ -579,12 +677,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const playerNameInput = document.getElementById("player-name-input");
 
     if (addPlayerBtn && playerNameInput) {
-        addPlayerBtn.onclick = function () {
+        addPlayerBtn.onclick = function () {  // ✅ Use `onclick` instead of `addEventListener`
             const playerName = playerNameInput.value.trim();
             if (playerName) {
                 console.log(`📤 Sending join request for: ${playerName}`);
                 socket.send(JSON.stringify({ type: "join", name: playerName }));
-                playerNameInput.value = "";
+                playerNameInput.value = ""; // ✅ Clear input after sending
             } else {
                 console.warn("⚠️ No player name entered!");
             }
@@ -593,37 +691,18 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("❌ Player input elements not found!");
     }
 
-    socket.onmessage = function (event) {
-    console.log("📩 Received message from WebSocket:", event.data);
+    socket.onmessage = function(event) {
+        console.log("📩 Received message from WebSocket:", event.data);
 
-    try {
-        let data = JSON.parse(event.data);
-        if (data.type === "updatePlayers") {
-            console.log("🔄 Updating players list:", data.players);
-            players = data.players;
-            updateUI();
-        } else if (data.type === "playerHand") {
-            players.forEach((player) => {
-                if (player.name === data.playerName) {
-                    player.hand = data.hand;
-                }
-            });
-            updateUI();
-        } else if (data.type === "communityCards") {
-            tableCards = data.cards;
-            updateUI();
-        } else if (data.type === "potUpdate") {
-            pot = data.pot;
-            updateUI();
-        } else if (data.type === "roundUpdate") {
-            round = data.round;
-            currentBet = data.currentBet;
-            updateUI();
-        } else if (data.type === "message") {
-            displayMessage(data.message);
+        try {
+            let data = JSON.parse(event.data);
+            if (data.type === "updatePlayers") {
+                console.log("🔄 Updating players list:", data.players);
+                updateUI(data.players); // ✅ Use `updateUI()` to update all UI elements
+            }
+            
+        } catch (error) {
+            console.error("❌ Error parsing message:", error);
         }
-    } catch (error) {
-        console.error("❌ Error parsing message:", error); // Corrected line: added closing parenthesis
-    }
-};
+    };
 });
