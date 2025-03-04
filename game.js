@@ -666,89 +666,43 @@ restartBtn.onclick = function(){
     playerNameInput.value = "";
     updateUI();
 };
-const socket = new WebSocket("wss://pokerdex-server.onrender.com");
+document.addEventListener("DOMContentLoaded", function () {
+    const socket = new WebSocket("wss://pokerdex-server.onrender.com");
 
-socket.onopen = () => {
-    console.log("✅ Connected to WebSocket server");
-};
+    socket.onopen = () => {
+        console.log("✅ Connected to WebSocket server");
+    };
 
-socket.onmessage = function(event) {
-    console.log("📩 Received message from WebSocket:", event.data);
-    try {
-        let data = JSON.parse(event.data);
+    const addPlayerBtn = document.getElementById("add-player-btn");
+    const playerNameInput = document.getElementById("player-name-input");
 
-        if (data.type === "updatePlayers") {
-            console.log("🔄 Updating players list:", data.players);
-            updateUI(data.players);
-        }
-
-        if (data.type === "gameState") {
-            console.log("🌍 Syncing game state...");
-            syncGameState(data.gameState);
-        }
-    } catch (error) {
-        console.error("❌ Error parsing message:", error);
-    }
-};
-
-function syncGameState(state) {
-    players = state.players;
-    tableCards = state.tableCards;
-    pot = state.pot;
-    currentBet = state.currentBet;
-    currentPlayerIndex = state.currentPlayerIndex;
-    round = state.round;
-    
-    updateUI();
-    enforceTurnRestrictions();
-}
-
-function enforceTurnRestrictions() {
-    let currentPlayer = players[currentPlayerIndex];
-    if (currentPlayer.name !== playerNameInput.value.trim()) {
-        disableActionButtons();
+    if (addPlayerBtn && playerNameInput) {
+        addPlayerBtn.onclick = function () {  // ✅ Use `onclick` instead of `addEventListener`
+            const playerName = playerNameInput.value.trim();
+            if (playerName) {
+                console.log(`📤 Sending join request for: ${playerName}`);
+                socket.send(JSON.stringify({ type: "join", name: playerName }));
+                playerNameInput.value = ""; // ✅ Clear input after sending
+            } else {
+                console.warn("⚠️ No player name entered!");
+            }
+        };
     } else {
-        enableActionButtons();
+        console.error("❌ Player input elements not found!");
     }
-}
 
-function disableActionButtons() {
-    foldBtn.style.display = "none";
-    checkBtn.style.display = "none";
-    callBtn.style.display = "none";
-    betBtn.style.display = "none";
-    raiseBtn.style.display = "none";
-}
+    socket.onmessage = function(event) {
+        console.log("📩 Received message from WebSocket:", event.data);
 
-function enableActionButtons() {
-    foldBtn.style.display = "inline";
-    checkBtn.style.display = currentBet === 0 ? "inline" : "none";
-    callBtn.style.display = currentBet > 0 ? "inline" : "none";
-    betBtn.style.display = currentBet === 0 ? "inline" : "none";
-    raiseBtn.style.display = currentBet > 0 ? "inline" : "none";
-}
-
-foldBtn.onclick = function() {
-    sendPlayerAction("fold");
-};
-
-callBtn.onclick = function() {
-    sendPlayerAction("call");
-};
-
-checkBtn.onclick = function() {
-    sendPlayerAction("check");
-};
-
-function sendPlayerAction(action) {
-    socket.send(JSON.stringify({ type: "playerAction", player: playerNameInput.value.trim(), action }));
-}
-
-startGameBtn.onclick = function() {
-    if (players.length >= 2) {
-        console.log("📤 Sending start game event to WebSocket server...");
-        socket.send(JSON.stringify({ type: "startGame" }));
-    } else {
-        displayMessage("You need at least two players to start.");
-    }
-};
+        try {
+            let data = JSON.parse(event.data);
+            if (data.type === "updatePlayers") {
+                console.log("🔄 Updating players list:", data.players);
+                updateUI(data.players); // ✅ Use `updateUI()` to update all UI elements
+            }
+            
+        } catch (error) {
+            console.error("❌ Error parsing message:", error);
+        }
+    };
+});
