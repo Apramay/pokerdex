@@ -414,7 +414,7 @@ function isOnePair(ranks) {
     return ranks.some((rank, index) => ranks.indexOf(rank) !== index);
 }
 
-functiongetQuadRank(ranks) {
+function getQuadRank(ranks) {
     return ranks.find(rank => ranks.filter(r => r === rank).length === 4);
 }
 
