@@ -622,7 +622,8 @@ document.addEventListener("DOMContentLoaded", function () {
             } else if (data.type === "message") {
                 displayMessage(data.message);
             }
-        } catch (error) {
-            console.error("❌ Error parsing message:", error}
+       } catch (error) {
+            console.error("❌ Error parsing message:", error);
+        }
     };
 });
