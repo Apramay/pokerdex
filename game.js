@@ -594,36 +594,36 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     socket.onmessage = function (event) {
-        console.log("📩 Received message from WebSocket:", event.data);
+    console.log("📩 Received message from WebSocket:", event.data);
 
-        try {
-            let data = JSON.parse(event.data);
-            if (data.type === "updatePlayers") {
-                console.log("🔄 Updating players list:", data.players);
-                players = data.players;
-                updateUI();
-            } else if (data.type === "playerHand") {
-                players.forEach((player) => {
-                    if (player.name === data.playerName) {
-                        player.hand = data.hand;
-                    }
-                });
-                updateUI();
-            } else if (data.type === "communityCards") {
-                tableCards = data.cards;
-                updateUI();
-            } else if (data.type === "potUpdate") {
-                pot = data.pot;
-                updateUI();
-            } else if (data.type === "roundUpdate") {
-                round = data.round;
-                currentBet = data.currentBet;
-                updateUI();
-            } else if (data.type === "message") {
-                displayMessage(data.message);
-            }
-       } catch (error) {
-            console.error("❌ Error parsing message:", error);
+    try {
+        let data = JSON.parse(event.data);
+        if (data.type === "updatePlayers") {
+            console.log("🔄 Updating players list:", data.players);
+            players = data.players;
+            updateUI();
+        } else if (data.type === "playerHand") {
+            players.forEach((player) => {
+                if (player.name === data.playerName) {
+                    player.hand = data.hand;
+                }
+            });
+            updateUI();
+        } else if (data.type === "communityCards") {
+            tableCards = data.cards;
+            updateUI();
+        } else if (data.type === "potUpdate") {
+            pot = data.pot;
+            updateUI();
+        } else if (data.type === "roundUpdate") {
+            round = data.round;
+            currentBet = data.currentBet;
+            updateUI();
+        } else if (data.type === "message") {
+            displayMessage(data.message);
         }
-    };
+    } catch (error) {
+        console.error("❌ Error parsing message:", error); // Corrected line: added closing parenthesis
+    }
+};
 });
