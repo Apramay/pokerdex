@@ -591,7 +591,6 @@ const raiseBtn = document.getElementById("raise-btn");
 const restartBtn = document.getElementById("restart-btn");
 const playerNameInput = document.getElementById("player-name-input");
 const addPlayerBtn = document.getElementById("add-player-btn");
-const startGameBtn = document.getElementById("start-game-btn");
 
 function updateUI(playersFromWebSocket = null) {
     // Use WebSocket data if available; otherwise, use local players list
