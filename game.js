@@ -1,3 +1,36 @@
+// Card and deck functions
+const suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
+const ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
+
+function createDeck() {
+    const deck =;
+    for (const suit of suits) {
+        for (const rank of ranks) {
+            deck.push({ suit, rank });
+        }
+    }
+    return deck;
+}
+
+function shuffleDeck(deck) {
+    for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+    return deck;
+}
+
+function dealCard(deck) {
+    return deck.pop();
+}
+
+function dealHand(deck, numCards) {
+    const hand =;
+    for (let i = 0; i < numCards; i++) {
+        hand.push(dealCard(deck));
+    }
+    return hand;
+}
 function displayCard(card) {
     const rank = card.rank;
     const suit = card.suit;
