@@ -101,7 +101,7 @@ function displayMessage(message) {
 
 // WebSocket connection
 document.addEventListener("DOMContentLoaded", function () {
-    const socket = new WebSocket("ws://localhost:8080"); // Replace with your server address
+    const socket = new WebSocket("wss://pokerdex-server.onrender.com");
 
     socket.onopen = () => {
         console.log("✅ Connected to WebSocket server");
