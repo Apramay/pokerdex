@@ -211,4 +211,3 @@ document.addEventListener("DOMContentLoaded", function () {
         socket.send(JSON.stringify(actionData));
     }
 });
-});
