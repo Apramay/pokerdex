@@ -170,12 +170,30 @@ document.addEventListener("DOMContentLoaded", function () {
     const callBtn = document.getElementById("call-btn");
     const betBtn = document.getElementById("bet-btn");
     const raiseBtn = document.getElementById("raise-btn");
-    const betAmountInput = document.getElementById("bet-amount-input");
-
+const betAmountInput = document.getElementById("bet-input");
+    
     if (foldBtn) foldBtn.onclick = () => sendAction("fold");
     if (callBtn) callBtn.onclick = () => sendAction("call");
-    if (betBtn) betBtn.onclick = () => sendAction("bet", parseInt(betAmountInput.value));
-    if (raiseBtn) raiseBtn.onclick = () => sendAction("raise", parseInt(betAmountInput.value));
+  if (betBtn) {
+    betBtn.onclick = () => {
+        if (betAmountInput) {  // Check if betAmountInput exists
+            sendAction("bet", parseInt(betAmountInput.value));
+        } else {
+            console.error("betAmountInput not found!");
+        }
+    };
+}
+
+if (raiseBtn) {
+    raiseBtn.onclick = () => {
+        if (betAmountInput) {  // Check if betAmountInput exists
+            sendAction("raise", parseInt(betAmountInput.value));
+        } else {
+            console.error("betAmountInput not found!");
+        }
+    };
+}
+
 
     function sendAction(action, amount = null) {
         if (socket.readyState !== WebSocket.OPEN) {
