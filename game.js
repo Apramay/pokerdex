@@ -54,13 +54,12 @@ let currentBet = 0;
 let round = 0;
 
 // UI elements
-const playersContainer = document.getElementById("players-container");
-const tableCardsContainer = document.getElementById("table-cards-container");
-const potDisplay = document.getElementById("pot-display");
-const roundDisplay = document.getElementById("round-display");
-const currentBetDisplay = document.getElementById("current-bet-display");
-const messageDisplay = document.getElementById("message-display");
-
+const playersContainer = document.getElementById("players");
+const tableCardsContainer = document.getElementById("community-cards");
+const potDisplay = document.getElementById("pot");
+const roundDisplay = document.getElementById("round");
+const currentBetDisplay = document.getElementById("currentBet");
+const messageDisplay = document.getElementById("message");
 function updateUI(playersFromWebSocket = null) {
     if (playersFromWebSocket) {
         players = playersFromWebSocket;
