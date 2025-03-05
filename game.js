@@ -670,18 +670,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const playerNameInput = document.getElementById("player-name-input");
 
     if (addPlayerBtn && playerNameInput) {
-        addPlayerBtn.onclick = function () {  // ✅ Use `onclick` instead of `addEventListener`
+        addPlayerBtn.onclick = function () {
             const playerName = playerNameInput.value.trim();
             if (playerName) {
                 if (socket.readyState === WebSocket.OPEN) {
-    console.log(`📤 Sending join request for: ${playerName}`);
-    socket.send(JSON.stringify({ type: "join", name: playerName }));
-} else {
-    console.warn("⚠️ WebSocket is not open. Reconnecting...");
-    reconnectWebSocket();
-}
+                    console.log(`📤 Sending join request for: ${playerName}`);
+                    socket.send(JSON.stringify({ type: "join", name: playerName }));
+                } else {
+                    console.warn("⚠️ WebSocket is not open. Reconnecting...");
+                    // Add your reconnectWebSocket() function here if needed
+                }
 
-                playerNameInput.value = ""; // ✅ Clear input after sending
+                playerNameInput.value = "";
             } else {
                 console.warn("⚠️ No player name entered!");
             }
@@ -697,21 +697,29 @@ document.addEventListener("DOMContentLoaded", function () {
             let data = JSON.parse(event.data);
             if (data.type === "updatePlayers") {
                 console.log("🔄 Updating players list:", data.players);
-                updateUI(data.players); // ✅ Use `updateUI()` to update all UI elements
+                updateUI(data.players);
             }
             if (data.type === "startGame") {
-        console.log("🎲 Game has started!");
-        startGame(players.map(p => p.name), 1000);  // ✅ Start the game for all clients
-    }
-            
+                console.log("🎲 Game has started!");
+                // Remove this line. The server will send the game state.
+            }
+            if (data.type === "updateGameState") {
+                console.log("🔄 Updating game state:", data);
+                players = data.players;
+                tableCards = data.tableCards;
+                pot = data.pot;
+                currentBet = data.currentBet;
+                round = data.round;
+                currentPlayerIndex = data.currentPlayerIndex;
+                updateUI(players); // Update the UI with the new game state
+            }
         } catch (error) {
             console.error("❌ Error parsing message:", error);
         }
     };
-});
 
-const startGameBtn = document.getElementById("start-game-btn"); // Get the button element
-
+    // Start Game button event listener (inside DOMContentLoaded)
+    const startGameBtn = document.getElementById("start-game-btn");
     startGameBtn.onclick = function() {
         if (players.length >= 2) {
             if (socket.readyState === WebSocket.OPEN) {
@@ -723,3 +731,4 @@ const startGameBtn = document.getElementById("start-game-btn"); // Get the butto
             displayMessage("You need at least two players to start.");
         }
     };
+});
