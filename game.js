@@ -646,18 +646,7 @@ addPlayerBtn.onclick = function() {
     }
 };
 
-startGameBtn.onclick = function() {
-    if (players.length >= 2) {
-        // Send the startGame message to the server
-        if (socket.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify({ type: "startGame" }));
-        } else {
-            displayMessage("WebSocket connection not open.");
-        }
-    } else {
-        displayMessage("You need at least two players to start.");
-    }
-};
+
 
 restartBtn.onclick = function(){
     players = [];
