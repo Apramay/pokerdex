@@ -73,20 +73,25 @@ function updateUI(playersFromWebSocket = null) {
         const playerDiv = document.createElement("div");
         playerDiv.classList.add("player");
 
-        let dealerIndicator = index === dealerIndex ? "D " : "";
+        let dealerIndicator = "";
+        if(round > 0){
+            dealerIndicator = index === dealerIndex ? "D " : "";
+        }
         let currentPlayerIndicator = index === currentPlayerIndex ? "➡️ " : "";
         let blindIndicator = "";
-        if (index === (dealerIndex + 1) % players.length) blindIndicator = "SB ";
-        if (index === (dealerIndex + 2) % players.length) blindIndicator = "BB ";
+        if(round > 0){
+            if (index === (dealerIndex + 1) % players.length) blindIndicator = "SB ";
+            if (index === (dealerIndex + 2) % players.length) blindIndicator = "BB ";
+        }
 
         playerDiv.innerHTML = `
             ${dealerIndicator}${blindIndicator}${currentPlayerIndicator}${player.name}: Tokens: ${player.tokens}<br>
-            Hand: ${displayCards(player.hand)}
+            Hand: ${displayHand(player.hand)}
         `;
         playersContainer.appendChild(playerDiv);
     });
 
-    if (tableCardsContainer) tableCardsContainer.innerHTML = displayCards(tableCards);
+    if (tableCardsContainer) tableCardsContainer.innerHTML = displayHand(tableCards);
     if (potDisplay) potDisplay.textContent = `Pot: ${pot}`;
     if (roundDisplay) roundDisplay.textContent = `Round: ${round}`;
     if (currentBetDisplay) currentBetDisplay.textContent = `Current Bet: ${currentBet}`;
@@ -95,13 +100,6 @@ function updateUI(playersFromWebSocket = null) {
         messageDisplay.textContent = `${players[currentPlayerIndex].name}, your turn.`;
     }
 }
-
-function displayMessage(message) {
-    if (messageDisplay) {
-        messageDisplay.textContent = message;
-    }
-}
-
 // WebSocket connection
 document.addEventListener("DOMContentLoaded", function () {
     const socket = new WebSocket("wss://pokerdex-server.onrender.com");
