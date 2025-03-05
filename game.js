@@ -52,6 +52,7 @@ let pot = 0;
 let currentPlayerIndex = 0;
 let currentBet = 0;
 let round = 0;
+let dealerIndex = 0
 
 // UI elements
 const playersContainer = document.getElementById("players");
@@ -144,6 +145,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 currentBet = data.currentBet;
                 round = data.round;
                 currentPlayerIndex = data.currentPlayerIndex;
+                dealerIndex = data.dealerIndex;
                 updateUI(players);
             }
 
