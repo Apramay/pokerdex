@@ -34,12 +34,13 @@ function displayCard(card) {
     const rank = card.rank;
     const suit = card.suit;
     const imageName = `${rank}_of_${suit}.png`;
-    return `<img src="./cards/${imageName}" alt="${rank} of ${suit}" onerror="this.onerror=null; this.src='./cards/back.png';" class="card">`;
+
+    return `<img src="./cards/${imageName}" alt="${rank} of ${suit}" onerror="this.onerror=null; this.src='./cards/default.png';">`;
 }
 
-function displayCards(cards) {
-    if (!cards || cards.length === 0) return "";
-    return cards.map(card => displayCard(card)).join("");
+
+function displayHand(hand) {
+    return hand.map(displayCard).join(", ");
 }
 
 // UI elements and game state
