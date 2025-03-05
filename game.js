@@ -3,7 +3,7 @@ const suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
 const ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
 
 function createDeck() {
-    const deck =;
+    const deck = [];
     for (const suit of suits) {
         for (const rank of ranks) {
             deck.push({ suit, rank });
@@ -25,7 +25,7 @@ function dealCard(deck) {
 }
 
 function dealHand(deck, numCards) {
-    const hand =;
+    const hand = [];
     for (let i = 0; i < numCards; i++) {
         hand.push(dealCard(deck));
     }
@@ -44,8 +44,8 @@ function displayCards(cards) {
 }
 
 // UI elements and game state
-let players =;
-let tableCards =;
+let players = [];
+let tableCards = [];
 let pot = 0;
 let currentPlayerIndex = 0;
 let currentBet = 0;
