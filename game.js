@@ -709,7 +709,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     };
 });
-startGameBtn.onclick = function() {
+
+const startGameBtn = document.getElementById("start-game-btn"); // Get the button element
+
+    startGameBtn.onclick = function() {
         if (players.length >= 2) {
             if (socket.readyState === WebSocket.OPEN) {
                 socket.send(JSON.stringify({ type: "startGame" }));
