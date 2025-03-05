@@ -680,8 +680,14 @@ document.addEventListener("DOMContentLoaded", function () {
         addPlayerBtn.onclick = function () {  // ✅ Use `onclick` instead of `addEventListener`
             const playerName = playerNameInput.value.trim();
             if (playerName) {
-                console.log(`📤 Sending join request for: ${playerName}`);
-                socket.send(JSON.stringify({ type: "join", name: playerName }));
+                if (socket.readyState === WebSocket.OPEN) {
+    console.log(`📤 Sending join request for: ${playerName}`);
+    socket.send(JSON.stringify({ type: "join", name: playerName }));
+} else {
+    console.warn("⚠️ WebSocket is not open. Reconnecting...");
+    reconnectWebSocket();
+}
+
                 playerNameInput.value = ""; // ✅ Clear input after sending
             } else {
                 console.warn("⚠️ No player name entered!");
