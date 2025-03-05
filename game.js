@@ -100,9 +100,8 @@ function updateUI(playersFromWebSocket = null) {
         messageDisplay.textContent = `${players[currentPlayerIndex].name}, your turn.`;
     }
 }
-// WebSocket connection
 document.addEventListener("DOMContentLoaded", function () {
-    const socket = new WebSocket("wss://pokerdex-server.onrender.com");
+    const socket = new WebSocket("wss://pokerdex-server.onrender.com"); // Replace with your server address
 
     socket.onopen = () => {
         console.log("✅ Connected to WebSocket server");
@@ -155,12 +154,12 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     const startGameBtn = document.getElementById("start-game-btn");
-    if(startGameBtn){
+    if (startGameBtn) {
         startGameBtn.onclick = function () {
             if (socket.readyState === WebSocket.OPEN) {
                 socket.send(JSON.stringify({ type: "startGame" }));
             } else {
-                displayMessage("WebSocket connection not open.");
+                // displayMessage("WebSocket connection not open.");
             }
         };
     }
@@ -170,34 +169,33 @@ document.addEventListener("DOMContentLoaded", function () {
     const callBtn = document.getElementById("call-btn");
     const betBtn = document.getElementById("bet-btn");
     const raiseBtn = document.getElementById("raise-btn");
-const betAmountInput = document.getElementById("bet-input");
-    
+    const betAmountInput = document.getElementById("bet-input");
+
     if (foldBtn) foldBtn.onclick = () => sendAction("fold");
     if (callBtn) callBtn.onclick = () => sendAction("call");
-  if (betBtn) {
-    betBtn.onclick = () => {
-        if (betAmountInput) {  // Check if betAmountInput exists
-            sendAction("bet", parseInt(betAmountInput.value));
-        } else {
-            console.error("betAmountInput not found!");
-        }
-    };
-}
+    if (betBtn) {
+        betBtn.onclick = () => {
+            if (betAmountInput) {
+                sendAction("bet", parseInt(betAmountInput.value));
+            } else {
+                console.error("betAmountInput not found!");
+            }
+        };
+    }
 
-if (raiseBtn) {
-    raiseBtn.onclick = () => {
-        if (betAmountInput) {  // Check if betAmountInput exists
-            sendAction("raise", parseInt(betAmountInput.value));
-        } else {
-            console.error("betAmountInput not found!");
-        }
-    };
-}
-
+    if (raiseBtn) {
+        raiseBtn.onclick = () => {
+            if (betAmountInput) {
+                sendAction("raise", parseInt(betAmountInput.value));
+            } else {
+                console.error("betAmountInput not found!");
+            }
+        };
+    }
 
     function sendAction(action, amount = null) {
         if (socket.readyState !== WebSocket.OPEN) {
-            displayMessage("WebSocket connection not open.");
+            // displayMessage("WebSocket connection not open.");
             return;
         }
 
@@ -212,4 +210,5 @@ if (raiseBtn) {
 
         socket.send(JSON.stringify(actionData));
     }
+});
 });
