@@ -133,9 +133,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log("🔄 Updating players list:", data.players);
                 updateUI(data.players);
             }
+            
             if (data.type === "startGame") {
                 console.log("🎲 Game has started!");
             }
+            if (data.type === "bigBlindCanCheck") {
+            console.log(`✅ ${data.playerName} can check!`);
+            document.getElementById("check-btn").style.display = "inline"; // ✅ FIX: Show check button
+        }
             if (data.type === "updateGameState") {
                 console.log("🔄 Updating game state:", data);
                 players = data.players;
