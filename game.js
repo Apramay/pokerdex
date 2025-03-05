@@ -174,6 +174,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const callBtn = document.getElementById("call-btn");
     const betBtn = document.getElementById("bet-btn");
     const raiseBtn = document.getElementById("raise-btn");
+    const checkBtn = document.getElementById("check-btn"); // ✅ Add check button reference
+
     const betAmountInput = document.getElementById("bet-input");
 
     if (foldBtn) foldBtn.onclick = () => sendAction("fold");
@@ -197,6 +199,9 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         };
     }
+    if (checkBtn) {
+    checkBtn.onclick = () => sendAction("check"); // ✅ Send check action when clicked
+}
 
     function sendAction(action, amount = null) {
         if (socket.readyState !== WebSocket.OPEN) {
