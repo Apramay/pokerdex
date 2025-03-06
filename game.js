@@ -36,7 +36,9 @@ function displayCard(card) {
     const suit = card.suit.toLowerCase();
     const imageName = `${rank}_of_${suit}.png`;
 
-    return `<img src="./cards/${imageName}" alt="${rank} of ${suit}" onerror="this.onerror=null; this.src='./cards/default.png';">`;
+    return `<img src="https://apramay.github.io/pokerdex/cards/${imageName}" 
+            alt="${rank} of ${suit}" 
+            onerror="this.onerror=null; this.src='./cards/default.png';">`;
 }
 
 
