@@ -39,7 +39,6 @@ function displayCard(card) {
 
     return `<img src="${imageUrl}" alt="${rank} of ${suit}" onerror="this.onerror=null; this.src='./cards/default.png';">`;
 }
-}
 
 
 function displayHand(hand) {
