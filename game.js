@@ -138,9 +138,31 @@ document.addEventListener("DOMContentLoaded", function () {
             if (data.type === "startGame") {
                 console.log("🎲 Game has started!");
             }
-            if (data.type === "bigBlindCanCheck") {
-            console.log(`✅ ${data.playerName} can check!`);
-            document.getElementById("check-btn").style.display = "inline"; // ✅ FIX: Show check button
+            iif (data.type === "bigBlindAction") {
+            displayMessage(data.message);
+
+            checkBtn.style.display = data.options.includes("check") ? "inline" : "none";
+            callBtn.style.display = data.options.includes("call") ? "inline" : "none";
+            foldBtn.style.display = data.options.includes("fold") ? "inline" : "none";
+            betBtn.style.display = data.options.includes("bet") ? "inline" : "none";
+            raiseBtn.style.display = data.options.includes("raise") ? "inline" : "none";
+
+            checkBtn.onclick = () => {
+                socket.send(JSON.stringify({ type: "check", playerName }));
+            };
+
+            callBtn.onclick = () => {
+                socket.send(JSON.stringify({ type: "call", playerName }));
+            };
+
+            raiseBtn.onclick = () => {
+                const amount = parseInt(betInput.value);
+                if (!isNaN(amount)) {
+                    socket.send(JSON.stringify({ type: "raise", playerName, amount }));
+                } else {
+                    displayMessage("Invalid raise amount.");
+                }
+            };
         }
             if (data.type === "updateGameState") {
                 console.log("🔄 Updating game state:", data);
