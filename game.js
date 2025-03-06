@@ -35,9 +35,10 @@ function dealHand(deck, numCards) {
 function displayCard(card) {
     const rank = card.rank;
     const suit = card.suit;
-    const imageName = `${rank}_of_${suit}.png`;
+    const imageUrl = `https://raw.githubusercontent.com/Apramay/pokerdex/main/cards/${imageName}`;
 
-    return `<img src="./cards/${imageName}" alt="${rank} of ${suit}" onerror="this.onerror=null; this.src='./cards/default.png';">`;
+    return `<img src="${imageUrl}" alt="${rank} of ${suit}" onerror="this.onerror=null; this.src='./cards/default.png';">`;
+}
 }
 
 
