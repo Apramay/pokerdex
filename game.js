@@ -32,8 +32,8 @@ function dealHand(deck, numCards) {
     return hand;
 }
 function displayCard(card) {
-    const rank = card.rank;
-    const suit = card.suit;
+    const rank = card.rank.toLowerCase();
+    const suit = card.suit.toLowerCase();
     const imageName = `${rank}_of_${suit}.png`;
 
     return `<img src="./cards/${imageName}" alt="${rank} of ${suit}" onerror="this.onerror=null; this.src='./cards/default.png';">`;
