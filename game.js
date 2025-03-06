@@ -73,12 +73,12 @@ function updateUI(playersFromWebSocket = null) {
         const playerDiv = document.createElement("div");
         playerDiv.classList.add("player");
 
-        let dealerIndicator = index === dealerIndex ? "D " : "";
         let currentPlayerIndicator = index === currentPlayerIndex ? "➡️ " : "";
-        let blindIndicator = "";
-    
-            if (index === (dealerIndex + 1) % players.length) blindIndicator = "SB ";
-            if (index === (dealerIndex + 2) % players.length) blindIndicator = "BB ";
+        let indicators = "";
+        if (index === dealerIndex) indicators += "D ";
+        if (index === (dealerIndex + 1) % players.length) indicators += "SB ";
+        if (index === (dealerIndex + 2) % players.length) indicators += "BB ";
+
             const displayedHand = player.name === players[currentPlayerIndex].name ? displayHand(player.hand) : "Hidden";
 
 
