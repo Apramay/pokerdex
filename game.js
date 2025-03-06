@@ -32,7 +32,7 @@ function dealHand(deck, numCards) {
     return hand;
 }
 function displayCard(card) {
-    const rank = card.rank.toLowerCase();
+    const rank = card.rank;
     const suit = card.suit.toLowerCase();
     const imageName = `${rank}_of_${suit}.png`;
 
