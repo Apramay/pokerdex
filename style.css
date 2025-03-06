@@ -46,13 +46,14 @@ h1 {
     margin: 20px 0;
 }
 
-#community-cards div img,
-.player img {
-    width: 75px;
+#community-cards div img {
+    width: 60px; /* Adjust size as needed */
+    max-width: 100%; /* Prevents images from exceeding their container */
     height: auto;
     border-radius: 5px;
     box-shadow: 2px 2px 10px rgba(255, 215, 0, 0.6);
 }
+
 
 /* Player Section */
 #players {
