@@ -138,7 +138,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (data.type === "startGame") {
                 console.log("🎲 Game has started!");
             }
-            iif (data.type === "bigBlindAction") {
+            if (data.type === "bigBlindAction") {
             displayMessage(data.message);
 
             checkBtn.style.display = data.options.includes("check") ? "inline" : "none";
