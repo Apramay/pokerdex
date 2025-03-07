@@ -42,16 +42,16 @@ h1 {
 #community-cards {
     display: flex;
     justify-content: center;
-    gap: 15px;
+    gap: 10px; /* Reduced gap for a tighter layout */
     margin: 20px 0;
 }
 
 #community-cards div img {
-    width: 60px; /* Adjust size as needed */
-    max-width: 100%; /* Prevents images from exceeding their container */
+    width: 50px; /* Adjusted width for better fit */
+    max-width: 100%; 
     height: auto;
     border-radius: 5px;
-    box-shadow: 2px 2px 10px rgba(255, 215, 0, 0.6);
+    box-shadow: 2px 2px 8px rgba(255, 215, 0, 0.6);
 }
 
 
@@ -60,7 +60,7 @@ h1 {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 20px;
+    gap: 10px;
     margin-bottom: 20px;
 }
 
