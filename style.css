@@ -46,7 +46,7 @@ h1 {
 }
 
 #community-cards div img {
-    width: 50px; /* Adjusted width for better fit */
+    width: 30px; /* Adjusted width for better fit */
     height: auto;
     border-radius: 5px;
     box-shadow: 2px 2px 8px rgba(255, 215, 0, 0.6);
