@@ -169,26 +169,29 @@ if (data.type === "bigBlindAction" || data.type === "playerTurn") {
     };
 }
 
+socket.onmessage = function (event) {
+    let data = JSON.parse(event.data);
 
-            if (data.type === "updateGameState") {
-                console.log("🔄 Updating game state:", data);
-                players = data.players;
-                tableCards = data.tableCards;
-                pot = data.pot;
-                currentBet = data.currentBet;
-                round = data.round;
-                currentPlayerIndex = data.currentPlayerIndex;
-                dealerIndex = data.dealerIndex;
-                updateUI(players);
-            }
+    if (data.type === "updateGameState") {
+        console.log("🔄 Updating game state:", data);
+        players = data.players;
+        tableCards = data.tableCards;
+        pot = data.pot;
+        currentBet = data.currentBet;
+        round = data.round;
+        currentPlayerIndex = data.currentPlayerIndex;
+        dealerIndex = data.dealerIndex;
+        updateUI(players);
+    }
 
-    } catch (error) {
-            console.error("❌ Error parsing message:", error);
-        }
-    };
-    if (isBettingRoundOver()) {
-    displayMessage("🛑 Betting Round Over - Moving to the Next Phase!");
-}
+    if (data.type === "nextRound") {
+        displayMessage("🛑 Betting Round Over - Moving to Next Phase!");
+        setTimeout(() => {
+            updateUI();
+        }, 1000);
+    }
+};
+
 
     const startGameBtn = document.getElementById("start-game-btn");
     if (startGameBtn) {
