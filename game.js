@@ -177,7 +177,7 @@ if (data.type === "bigBlindAction" || data.type === "playerTurn") {
                 pot = data.pot;
                 currentBet = data.currentBet;
                 round = data.round;
-                currentPlayerIndex = data.currentPlayerIndex;
+                       currentPlayerIndex = data.currentPlayerIndex; // ✅ Ensure next player is updated
                 dealerIndex = data.dealerIndex;
                 updateUI(players);
             }
