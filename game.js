@@ -169,36 +169,32 @@ if (data.type === "bigBlindAction" || data.type === "playerTurn") {
     };
 }
 
-socket.onmessage = function (event) {
-    try {
-        let data = JSON.parse(event.data);
 
-        if (data.type === "updateGameState") {
-            console.log("🔄 Updating game state:", data);
-            players = data.players;
-            tableCards = data.tableCards;
-            pot = data.pot;
-            currentBet = data.currentBet;
-            round = data.round;
-            currentPlayerIndex = data.currentPlayerIndex;
-            dealerIndex = data.dealerIndex;
-            updateUI(players);
-        }
-
-        if (data.type === "nextRound") {
+            if (data.type === "updateGameState") {
+                console.log("🔄 Updating game state:", data);
+                players = data.players;
+                tableCards = data.tableCards;
+                pot = data.pot;
+                currentBet = data.currentBet;
+                round = data.round;
+                currentPlayerIndex = data.currentPlayerIndex;
+                dealerIndex = data.dealerIndex;
+                updateUI(players);
+            }
+            if (data.type === "nextRound") {
             displayMessage("🛑 Betting Round Over - Moving to Next Phase!");
             setTimeout(() => {
                 updateUI();
             }, 1000);
         }
 
+
     } catch (error) {
-        console.error("❌ Error parsing message:", error);
-    }
-};
+            console.error("❌ Error parsing message:", error);
+        }
+    };
 
-
-const startGameBtn = document.getElementById("start-game-btn");
+    const startGameBtn = document.getElementById("start-game-btn");
     if (startGameBtn) {
         startGameBtn.onclick = function () {
             if (socket.readyState === WebSocket.OPEN) {
