@@ -186,6 +186,9 @@ if (data.type === "bigBlindAction" || data.type === "playerTurn") {
             console.error("❌ Error parsing message:", error);
         }
     };
+    if (isBettingRoundOver()) {
+    displayMessage("🛑 Betting Round Over - Moving to the Next Phase!");
+}
 
     const startGameBtn = document.getElementById("start-game-btn");
     if (startGameBtn) {
