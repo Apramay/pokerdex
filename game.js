@@ -138,15 +138,17 @@ document.addEventListener("DOMContentLoaded", function () {
             if (data.type === "startGame") {
                 console.log("🎲 Game has started!");
             }
-            if (data.type === "bigBlindAction" || data.type === "playerTurn") {
+if (data.type === "bigBlindAction" || data.type === "playerTurn") {
     displayMessage(data.message);
 
     checkBtn.style.display = data.options.includes("check") ? "inline" : "none";
     callBtn.style.display = data.options.includes("call") ? "inline" : "none";
     foldBtn.style.display = data.options.includes("fold") ? "inline" : "none";
     raiseBtn.style.display = data.options.includes("raise") ? "inline" : "none";
-                if (isBigBlind && !data.options.includes("call") && !data.options.includes("check")) {
+
+    if (isBigBlind && !data.options.includes("call") && !data.options.includes("check")) {
         callBtn.style.display = "inline";
+    }
 
     checkBtn.onclick = () => {
         socket.send(JSON.stringify({ type: "check", playerName: players[currentPlayerIndex].name }));
@@ -155,8 +157,6 @@ document.addEventListener("DOMContentLoaded", function () {
     callBtn.onclick = () => {
         socket.send(JSON.stringify({ type: "call", playerName: players[currentPlayerIndex].name }));
     };
-
-    
 
     raiseBtn.onclick = () => {
         const amount = parseInt(betInput.value);
@@ -172,6 +172,7 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 }
 
+
             if (data.type === "updateGameState") {
                 console.log("🔄 Updating game state:", data);
                 players = data.players;
@@ -184,7 +185,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 updateUI(players);
             }
 
-        } catch (error) {
+    } catch (error) {
             console.error("❌ Error parsing message:", error);
         }
     };
