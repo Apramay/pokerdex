@@ -138,32 +138,46 @@ document.addEventListener("DOMContentLoaded", function () {
             if (data.type === "startGame") {
                 console.log("🎲 Game has started!");
             }
-            if (data.type === "bigBlindAction") {
-            displayMessage(data.message);
+            if (data.type === "bigBlindAction" || data.type === "playerTurn") {
+    displayMessage(data.message);
 
-            checkBtn.style.display = data.options.includes("check") ? "inline" : "none";
-            callBtn.style.display = data.options.includes("call") ? "inline" : "none";
-            foldBtn.style.display = data.options.includes("fold") ? "inline" : "none";
-            betBtn.style.display = data.options.includes("bet") ? "inline" : "none";
-            raiseBtn.style.display = data.options.includes("raise") ? "inline" : "none";
+    checkBtn.style.display = data.options.includes("check") ? "inline" : "none";
+    callBtn.style.display = data.options.includes("call") ? "inline" : "none";
+    foldBtn.style.display = data.options.includes("fold") ? "inline" : "none";
+    betBtn.style.display = data.options.includes("bet") ? "inline" : "none";
+    raiseBtn.style.display = data.options.includes("raise") ? "inline" : "none";
 
-            checkBtn.onclick = () => {
-                socket.send(JSON.stringify({ type: "check", playerName }));
-            };
+    checkBtn.onclick = () => {
+        socket.send(JSON.stringify({ type: "check", playerName: players[currentPlayerIndex].name }));
+    };
 
-            callBtn.onclick = () => {
-                socket.send(JSON.stringify({ type: "call", playerName }));
-            };
+    callBtn.onclick = () => {
+        socket.send(JSON.stringify({ type: "call", playerName: players[currentPlayerIndex].name }));
+    };
 
-            raiseBtn.onclick = () => {
-                const amount = parseInt(betInput.value);
-                if (!isNaN(amount)) {
-                    socket.send(JSON.stringify({ type: "raise", playerName, amount }));
-                } else {
-                    displayMessage("Invalid raise amount.");
-                }
-            };
+    betBtn.onclick = () => {
+        const amount = parseInt(betInput.value);
+        if (!isNaN(amount)) {
+            socket.send(JSON.stringify({ type: "bet", playerName: players[currentPlayerIndex].name, amount }));
+        } else {
+            displayMessage("Invalid bet amount.");
         }
+    };
+
+    raiseBtn.onclick = () => {
+        const amount = parseInt(betInput.value);
+        if (!isNaN(amount)) {
+            socket.send(JSON.stringify({ type: "raise", playerName: players[currentPlayerIndex].name, amount }));
+        } else {
+            displayMessage("Invalid raise amount.");
+        }
+    };
+
+    foldBtn.onclick = () => {
+        socket.send(JSON.stringify({ type: "fold", playerName: players[currentPlayerIndex].name }));
+    };
+}
+
             if (data.type === "updateGameState") {
                 console.log("🔄 Updating game state:", data);
                 players = data.players;
@@ -227,20 +241,25 @@ document.addEventListener("DOMContentLoaded", function () {
 }
 
     function sendAction(action, amount = null) {
-        if (socket.readyState !== WebSocket.OPEN) {
-            // displayMessage("WebSocket connection not open.");
-            return;
-        }
-
-        const actionData = {
-            type: action,
-            playerName: players[currentPlayerIndex].name,
-        };
-
-        if (amount !== null) {
-            actionData.amount = amount;
-        }
-
-        socket.send(JSON.stringify(actionData));
+    if (socket.readyState !== WebSocket.OPEN) {
+        return;
     }
+
+    const actionData = {
+        type: action,
+        playerName: players[currentPlayerIndex].name,
+    };
+
+    if (amount !== null) {
+        actionData.amount = amount;
+    }
+
+    socket.send(JSON.stringify(actionData));
+
+    // ✅ Immediately update UI to reflect new state
+    setTimeout(() => {
+        socket.send(JSON.stringify({ type: "getGameState" }));
+    }, 500);
+}
+
 });
