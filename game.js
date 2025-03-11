@@ -146,9 +146,6 @@ if (data.type === "bigBlindAction" || data.type === "playerTurn") {
     foldBtn.style.display = data.options.includes("fold") ? "inline" : "none";
     raiseBtn.style.display = data.options.includes("raise") ? "inline" : "none";
 
-    if (isBigBlind && !data.options.includes("call") && !data.options.includes("check")) {
-        callBtn.style.display = "inline";
-    }
 
     checkBtn.onclick = () => {
         socket.send(JSON.stringify({ type: "check", playerName: players[currentPlayerIndex].name }));
