@@ -144,8 +144,9 @@ document.addEventListener("DOMContentLoaded", function () {
     checkBtn.style.display = data.options.includes("check") ? "inline" : "none";
     callBtn.style.display = data.options.includes("call") ? "inline" : "none";
     foldBtn.style.display = data.options.includes("fold") ? "inline" : "none";
-    betBtn.style.display = data.options.includes("bet") ? "inline" : "none";
     raiseBtn.style.display = data.options.includes("raise") ? "inline" : "none";
+                if (isBigBlind && !data.options.includes("call") && !data.options.includes("check")) {
+        callBtn.style.display = "inline";
 
     checkBtn.onclick = () => {
         socket.send(JSON.stringify({ type: "check", playerName: players[currentPlayerIndex].name }));
@@ -155,14 +156,7 @@ document.addEventListener("DOMContentLoaded", function () {
         socket.send(JSON.stringify({ type: "call", playerName: players[currentPlayerIndex].name }));
     };
 
-    betBtn.onclick = () => {
-        const amount = parseInt(betInput.value);
-        if (!isNaN(amount)) {
-            socket.send(JSON.stringify({ type: "bet", playerName: players[currentPlayerIndex].name, amount }));
-        } else {
-            displayMessage("Invalid bet amount.");
-        }
-    };
+    
 
     raiseBtn.onclick = () => {
         const amount = parseInt(betInput.value);
