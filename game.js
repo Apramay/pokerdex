@@ -198,8 +198,7 @@ socket.onmessage = function (event) {
 };
 
 
-
-    const startGameBtn = document.getElementById("start-game-btn");
+const startGameBtn = document.getElementById("start-game-btn");
     if (startGameBtn) {
         startGameBtn.onclick = function () {
             if (socket.readyState === WebSocket.OPEN) {
