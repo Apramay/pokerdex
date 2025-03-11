@@ -189,7 +189,9 @@ socket.onmessage = function (event) {
         setTimeout(() => {
             updateUI();
         }, 1000);
-    }
+    }catch (error) {
+            console.error("❌ Error parsing message:", error);
+        }
 };
 
 
