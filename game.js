@@ -211,15 +211,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (foldBtn) foldBtn.onclick = () => sendAction("fold");
     if (callBtn) callBtn.onclick = () => sendAction("call");
-    if (betBtn) {
-        betBtn.onclick = () => {
-            if (betAmountInput) {
-                sendAction("bet", parseInt(betAmountInput.value));
-            } else {
-                console.error("betAmountInput not found!");
-            }
-        };
-    }
+
 
     if (raiseBtn) {
         raiseBtn.onclick = () => {
