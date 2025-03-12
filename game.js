@@ -33,13 +33,19 @@ function dealHand(deck, numCards) {
 }
 
 function displayCard(card) {
+    if (!card) {
+        return ""; //  Handle cases where card is undefined or null
+    }
     const rank = card.rank;
     const suit = card.suit;
-    const imageName = `${rank}_of_${suit}.png`;
-    return `<img src="cards/${imageName}" alt="${rank} of ${suit}">`;
+    const imageName = `<span class="math-inline">\{rank\}\_of\_</span>{suit}.png`;
+    return `<img src="cards/<span class="math-inline">\{imageName\}" alt\="</span>{rank} of ${suit}">`;
 }
 
 function displayHand(hand) {
+    if (!hand || hand.length === 0) {
+        return ""; //  Handle cases where hand is undefined, null, or empty
+    }
     return hand.map(displayCard).join(", ");
 }
 
@@ -59,6 +65,14 @@ const playerNameInput = document.getElementById("player-name-input");
 const addPlayerBtn = document.getElementById("add-player-btn");
 const startGameBtn = document.getElementById("start-game-btn");
 
+let players = [];
+let tableCards = [];
+let pot = 0;
+let currentPlayerIndex = 0;
+let dealerIndex = 0;
+let currentBet = 0;
+let round = 0;
+
 function updateUI() {
     playersDiv.innerHTML = "";
     players.forEach((player, index) => {
@@ -66,11 +80,8 @@ function updateUI() {
         if (index === dealerIndex) indicators += "D ";
         if (index === (dealerIndex + 1) % players.length) indicators += "SB ";
         if (index === (dealerIndex + 2) % players.length) indicators += "BB ";
-        playersDiv.innerHTML += `<div class="player">${indicators}${player.name}: Tokens: ${player.tokens}<br>Hand: ${player.status === "active" ? displayHand(player.hand) : "Folded"}</div>`;
-    });
-    communityCardsDiv.innerHTML = "";
-    tableCards.forEach(card => {
-        communityCardsDiv.innerHTML += `<div>${displayCard(card)}</div>`;
+        let handDisplay = player.status === "active" ? displayHand(player.hand) : "Folded";
+        playersDiv.innerHTML += `<div class="player"><span class="math-inline">\{indicators\}</span>{player.name}: Tokens: ${player.tokens}<br>Hand: ${handDisplay}</div>`;
     });
     communityCardsDiv.innerHTML = "";
     tableCards.forEach(card => {
@@ -87,26 +98,28 @@ function displayMessage(message) {
 }
 
 // WebSocket connection
-const socket = io("pokerdex-server.onrender.com");  //  Connect to Render server
+const socket = new WebSocket("ws://pokerdex-server.onrender.com"); //  Replace with your server URL
 
-socket.on('connect', () => {
-    console.log("Connected to server");
+socket.addEventListener('open', (event) => {
+    console.log("Connected to WebSocket server");
 
-    //  Listen for events from the server and update the UI accordingly
-    socket.on('gameState', (gameState) => {
-        players = gameState.players;
-        tableCards = gameState.tableCards;
-        pot = gameState.pot;
-        currentPlayerIndex = gameState.currentPlayerIndex;
-        dealerIndex = gameState.dealerIndex;
-        currentBet = gameState.currentBet;
-        round = gameState.round;
-        updateUI();
-    });
+    // Button click handlers - these now send WebSocket messages
+    addPlayerBtn.onclick = function() {
+        const playerName = playerNameInput.value;
+        if (playerName) {
+            socket.send(JSON.stringify({ type: 'addPlayer', playerName: playerName }));
+            playerNameInput.value = "";
+        }
+    };
 
-    socket.on('message', (message) => {
-        displayMessage(message);
-    });
+    startGameBtn.onclick = function() {
+        socket.send(JSON.stringify({ type: 'startGame' }));
+    };
+
+    restartBtn.onclick = function(){
+        socket.send(JSON.stringify({ type: 'restartGame' }));
+        playerNameInput.value = "";
+    };
 
     //  Send player actions to the server
     function handleAction(action) {
@@ -114,46 +127,26 @@ socket.on('connect', () => {
     }
 
     function fold() {
-        socket.emit('playerAction', 'fold');
+        socket.send(JSON.stringify({ type: 'playerAction', action: 'fold', playerName: playerNameInput.value }));
     }
 
     function call() {
-        socket.emit('playerAction', 'call');
+         socket.send(JSON.stringify({ type: 'playerAction', action: 'call', playerName: playerNameInput.value }));
     }
 
     function bet(amount) {
-        socket.emit('playerAction', 'bet', amount);
+         socket.send(JSON.stringify({ type: 'playerAction', action: 'bet', playerName: playerNameInput.value, amount: amount }));
     }
 
     function raise(amount) {
-        socket.emit('playerAction', 'raise', amount);
+         socket.send(JSON.stringify({ type: 'playerAction', action: 'raise', playerName: playerNameInput.value, amount: amount }));
     }
 
     function check() {
-        socket.emit('playerAction', 'check');
+         socket.send(JSON.stringify({ type: 'playerAction', action: 'check', playerName: playerNameInput.value }));
     }
 
     //  Button click handlers - these now emit events
-    addPlayerBtn.onclick = function() {
-        const playerName = playerNameInput.value;
-        if (playerName) {
-            //  Emit 'addPlayer' event to the server
-            socket.emit('addPlayer', playerName);
-            playerNameInput.value = "";
-        }
-    };
-
-    startGameBtn.onclick = function() {
-        // Emit 'startGame' event to the server
-        socket.emit('startGame');
-    };
-
-    restartBtn.onclick = function(){
-        // Emit 'restartGame' event to the server
-        socket.emit('restartGame');
-        playerNameInput.value = "";
-    };
-
     foldBtn.onclick = () => { handleAction(fold); };
     callBtn.onclick = () => { handleAction(call); };
     betBtn.onclick = () => {
@@ -165,5 +158,39 @@ socket.on('connect', () => {
         if (!isNaN(amount)) { handleAction(() => raise(amount)); } else { displayMessage("Invalid raise amount."); }
     };
     checkBtn.onclick = () => { handleAction(check); };
+});
 
+socket.addEventListener('message', (event) => {
+    const message = event.data;
+    try {
+        const data = JSON.parse(message);
+        if (data.type === 'gameState') {
+            players = data.gameState.players;
+            tableCards = data.gameState.tableCards;
+            pot = data.gameState.pot;
+            currentPlayerIndex = data.gameState.currentPlayerIndex;
+            dealerIndex = data.gameState.dealerIndex;
+            currentBet = data.gameState.currentBet;
+            round = data.gameState.round;
+            updateUI();
+        } else if (data.type === 'message') {
+            displayMessage(data.message);
+        } else if (data.type === 'actionOptions') {
+            // Handle action options from the server
+            checkBtn.style.display = data.canCheck ? "inline" : "none";
+            callBtn.style.display = data.canCall ? "inline" : "none";
+            betBtn.style.display = data.canBet ? "inline" : "none";
+            raiseBtn.style.display = data.canRaise ? "inline" : "none";
+        }
+    } catch (e) {
+        console.error('Invalid JSON from server:', message);
+    }
+});
+
+socket.addEventListener('close', (event) => {
+    console.log("Disconnected from WebSocket server");
+});
+
+socket.addEventListener('error', (event) => {
+    console.error("WebSocket error:", event);
 });
