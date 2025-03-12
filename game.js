@@ -3,7 +3,7 @@ const ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
 const rankValues = { "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10, "J": 11, "Q": 12, "K": 13, "A": 14 };
 
 function createDeck() {
-    const deck = [];
+    const deck =;
     for (const suit of suits) {
         for (const rank of ranks) {
             deck.push({ suit, rank });
@@ -25,7 +25,7 @@ function dealCard(deck) {
 }
 
 function dealHand(deck, numCards) {
-    const hand = [];
+    const hand =;
     for (let i = 0; i < numCards; i++) {
         hand.push(dealCard(deck));
     }
@@ -65,8 +65,8 @@ let playerNameInput;
 let addPlayerBtn;
 let startGameBtn;
 
-let players = [];
-let tableCards = [];
+let players =;
+let tableCards =;
 let pot = 0;
 let currentPlayerIndex = 0;
 let dealerIndex = 0;
@@ -83,7 +83,8 @@ function updateUI() {
         if (index === dealerIndex) indicators += "D ";
         if (index === (dealerIndex + 1) % players.length) indicators += "SB ";
         if (index === (dealerIndex + 2) % players.length) indicators += "BB ";
-        playersDiv.innerHTML += `<div class="player">${indicators}${player.name}: Tokens: ${player.tokens}<br>Hand: ${player.status === "active" ? displayHand(player.hand) : "Folded"}</div>`;
+        let handDisplay = player.status === "active" ? displayHand(player.hand) : "Folded";
+        playersDiv.innerHTML += `<div class="player">${indicators}${player.name}: Tokens: ${player.tokens}<br>Hand: ${handDisplay}</div>`;
     });
     communityCardsDiv.innerHTML = "";
     tableCards.forEach(card => {
@@ -103,6 +104,32 @@ function displayMessage(message) {
 
 // WebSocket connection
 const socket = new WebSocket("wss://pokerdex-server.onrender.com");
+
+// --- Action handling functions (moved outside 'open' event) ---
+function handleAction(action) {
+    action();
+}
+
+function fold() {
+    socket.send(JSON.stringify({ type: 'playerAction', action: 'fold', playerName: playerNameInput.value }));
+}
+
+function call() {
+    socket.send(JSON.stringify({ type: 'playerAction', action: 'call', playerName: playerNameInput.value }));
+}
+
+function bet(amount) {
+    socket.send(JSON.stringify({ type: 'playerAction', action: 'bet', playerName: playerNameInput.value, amount: amount }));
+}
+
+function raise(amount) {
+    socket.send(JSON.stringify({ type: 'playerAction', action: 'raise', playerName: playerNameInput.value, amount: amount }));
+}
+
+function check() {
+    socket.send(JSON.stringify({ type: 'playerAction', action: 'check', playerName: playerNameInput.value }));
+}
+// --- End of moved functions ---
 
 socket.addEventListener('open', (event) => {
     console.log("Connected to WebSocket server");
