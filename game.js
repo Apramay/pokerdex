@@ -3,7 +3,7 @@ const ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
 const rankValues = { "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10, "J": 11, "Q": 12, "K": 13, "A": 14 };
 
 function createDeck() {
-    const deck = [];
+    const deck =;
     for (const suit of suits) {
         for (const rank of ranks) {
             deck.push({ suit, rank });
@@ -25,7 +25,7 @@ function dealCard(deck) {
 }
 
 function dealHand(deck, numCards) {
-    const hand = [];
+    const hand =;
     for (let i = 0; i < numCards; i++) {
         hand.push(dealCard(deck));
     }
@@ -86,79 +86,84 @@ function displayMessage(message) {
     messageDiv.textContent = message;
 }
 
-addPlayerBtn.onclick = function() {
-    const playerName = playerNameInput.value;
-    if (playerName) {
-        //  Emit 'addPlayer' event to the server
-        socket.emit('addPlayer', playerName);
-        playerNameInput.value = "";
-    }
-};
-
-startGameBtn.onclick = function() {
-    // Emit 'startGame' event to the server
-    socket.emit('startGame');
-};
-
-restartBtn.onclick = function(){
-    // Emit 'restartGame' event to the server
-    socket.emit('restartGame');
-    playerNameInput.value = "";
-};
-
 // WebSocket connection
 const socket = io("pokerdex-server.onrender.com");  //  Connect to Render server
 
-//  Listen for events from the server and update the UI accordingly
-socket.on('gameState', (gameState) => {
-    players = gameState.players;
-    tableCards = gameState.tableCards;
-    pot = gameState.pot;
-    currentPlayerIndex = gameState.currentPlayerIndex;
-    dealerIndex = gameState.dealerIndex;
-    currentBet = gameState.currentBet;
-    round = gameState.round;
-    updateUI();
+socket.on('connect', () => {
+    console.log("Connected to server");
+
+    //  Listen for events from the server and update the UI accordingly
+    socket.on('gameState', (gameState) => {
+        players = gameState.players;
+        tableCards = gameState.tableCards;
+        pot = gameState.pot;
+        currentPlayerIndex = gameState.currentPlayerIndex;
+        dealerIndex = gameState.dealerIndex;
+        currentBet = gameState.currentBet;
+        round = gameState.round;
+        updateUI();
+    });
+
+    socket.on('message', (message) => {
+        displayMessage(message);
+    });
+
+    //  Send player actions to the server
+    function handleAction(action) {
+        action();
+    }
+
+    function fold() {
+        socket.emit('playerAction', 'fold');
+    }
+
+    function call() {
+        socket.emit('playerAction', 'call');
+    }
+
+    function bet(amount) {
+        socket.emit('playerAction', 'bet', amount);
+    }
+
+    function raise(amount) {
+        socket.emit('playerAction', 'raise', amount);
+    }
+
+    function check() {
+        socket.emit('playerAction', 'check');
+    }
+
+    //  Button click handlers - these now emit events
+    addPlayerBtn.onclick = function() {
+        const playerName = playerNameInput.value;
+        if (playerName) {
+            //  Emit 'addPlayer' event to the server
+            socket.emit('addPlayer', playerName);
+            playerNameInput.value = "";
+        }
+    };
+
+    startGameBtn.onclick = function() {
+        // Emit 'startGame' event to the server
+        socket.emit('startGame');
+    };
+
+    restartBtn.onclick = function(){
+        // Emit 'restartGame' event to the server
+        socket.emit('restartGame');
+        playerNameInput.value = "";
+    };
+
+    foldBtn.onclick = () => { handleAction(fold); };
+    callBtn.onclick = () => { handleAction(call); };
+    betBtn.onclick = () => {
+        const amount = parseInt(betInput.value);
+        if (!isNaN(amount)) { handleAction(() => bet(amount)); } else { displayMessage("Invalid bet amount."); }
+    };
+    raiseBtn.onclick = () => {
+        const amount = parseInt(betInput.value);
+        if (!isNaN(amount)) { handleAction(() => raise(amount)); } else { displayMessage("Invalid raise amount."); }
+    };
+    checkBtn.onclick = () => { handleAction(check); };
+
 });
-
-socket.on('message', (message) => {
-    displayMessage(message);
-});
-
-//  Send player actions to the server
-function handleAction(action) {
-    action();
-}
-
-function fold() {
-    socket.emit('playerAction', 'fold');
-}
-
-function call() {
-    socket.emit('playerAction', 'call');
-}
-
-function bet(amount) {
-    socket.emit('playerAction', 'bet', amount);
-}
-
-function raise(amount) {
-    socket.emit('playerAction', 'raise', amount);
-}
-
-function check() {
-    socket.emit('playerAction', 'check');
-}
-
-//  Button click handlers - these now emit events
-foldBtn.onclick = () => { handleAction(fold); };
-callBtn.onclick = () => { handleAction(call); };
-betBtn.onclick = () => {
-    const amount = parseInt(betInput.value);
-    if (!isNaN(amount)) { handleAction(() => bet(amount)); } else { displayMessage("Invalid bet amount."); }
-};
-raiseBtn.onclick = () => {
-    const amount = parseInt(betInput.value);
-    if (!isNaN(amount)) { handleAction(() => raise(amount)); } else { displayMessage("Invalid raise amount."); }
-};
-checkBtn.onclick = () => { handleAction(check); };
