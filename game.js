@@ -125,6 +125,15 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("❌ Player input elements not found!");
     }
 
+    const messageDisplay = document.getElementById("message");
+
+    function displayMessage(message) {
+        if (messageDisplay) {
+            messageDisplay.textContent = message;
+        } else {
+            console.error("Message display element not found.");
+        }
+    }
     socket.onmessage = function (event) {
         console.log("📩 Received message from WebSocket:", event.data);
 
