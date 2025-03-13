@@ -156,10 +156,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log("🎲 Game has started!");
             }
 if (data.type === "bigBlindAction" ) {
-    if (!data.options) {
-        console.warn("⚠️ No options received from server!");
-        return;
-    }
+    console.log(`🔄 Handling bigBlindAction for: ${data.playerName}`);
+    if (data.playerName !== players[currentPlayerIndex]?.name) {
+        console.warn(`⚠️ Ignoring bigBlindAction update for ${data.playerName}, as it's not the current player.`);
+        return; // ✅ Prevents unintended UI changes
 
     checkBtn.style.display = data.options.includes("check") ? "inline" : "none";
     callBtn.style.display = data.options.includes("call") ? "inline" : "none";
@@ -188,17 +188,19 @@ if (data.type === "bigBlindAction" ) {
         socket.send(JSON.stringify({ type: "fold", playerName: players[currentPlayerIndex].name }));
     };
 }
+if (data.type === "playerTurn") {
+    console.log(`🎯 Player turn received: ${data.playerName}`);
+    let playerIndex = players.findIndex(p => p.name === data.playerName);
+    if (playerIndex !== -1) {
+        currentPlayerIndex = playerIndex;
+        console.log(`✅ Updated currentPlayerIndex: ${currentPlayerIndex}`);
+        updateUI(); // ✅ Immediately update UI after setting correct turn
+    } else {
+        console.warn(`⚠️ Player ${data.playerName} not found in players list`);
+    }
+}
 
-             if (data.type === "playerTurn") {
-            console.log(`🎯 Player turn received: ${data.playerName}`);
-            let playerIndex = players.findIndex(p => p.name === data.playerName);
-            if (playerIndex !== -1) {
-                currentPlayerIndex = playerIndex; // ✅ Ensure the correct player is assigned
-                console.log(`✅ Updated currentPlayerIndex: ${currentPlayerIndex}`);
-            } else {
-                console.warn(`⚠️ Player ${data.playerName} not found in players list`);
-            }
-        }
+
 
             if (data.type === "updateGameState") {
                 console.log("🔄 Updating game state:", data);
