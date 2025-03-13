@@ -153,7 +153,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (data.type === "startGame") {
                 console.log("🎲 Game has started!");
             }
-if (data.type === "bigBlindAction" || data.type === "playerTurn") {
+if (data.type === "bigBlindAction" ) {
     if (!data.options) {
         console.warn("⚠️ No options received from server!");
         return;
@@ -187,6 +187,16 @@ if (data.type === "bigBlindAction" || data.type === "playerTurn") {
     };
 }
 
+             if (data.type === "playerTurn") {
+            console.log(`🎯 Player turn received: ${data.playerName}`);
+            let playerIndex = players.findIndex(p => p.name === data.playerName);
+            if (playerIndex !== -1) {
+                currentPlayerIndex = playerIndex; // ✅ Ensure the correct player is assigned
+                console.log(`✅ Updated currentPlayerIndex: ${currentPlayerIndex}`);
+            } else {
+                console.warn(`⚠️ Player ${data.playerName} not found in players list`);
+            }
+        }
 
             if (data.type === "updateGameState") {
                 console.log("🔄 Updating game state:", data);
