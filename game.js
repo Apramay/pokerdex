@@ -32,6 +32,11 @@ function dealHand(deck, numCards) {
     return hand;
 }
 function displayCard(card) {
+    if (!card || !card.suit || !card.rank) {
+        console.warn("⚠️ Invalid card data received:", card);
+        return `<img src="./cards/default.png" alt="Invalid Card">`;
+    }
+
     const rank = card.rank;
     const suit = card.suit.toLowerCase();
     const imageName = `${rank}_of_${suit}.png`;
@@ -40,6 +45,7 @@ function displayCard(card) {
             alt="${rank} of ${suit}" 
             onerror="this.onerror=null; this.src='./cards/default.png';">`;
 }
+
 
 
 function displayHand(hand) {
