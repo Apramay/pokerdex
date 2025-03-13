@@ -99,7 +99,10 @@ function updateUI(playersFromWebSocket = null) {
     });
 
     if (tableCardsContainer) tableCardsContainer.innerHTML = displayHand(tableCards);
-    if (potDisplay) potDisplay.textContent = `Pot: ${pot}`;
+    if (potDisplay) {
+        console.log("💰 Updating UI pot display:", pot);
+        potDisplay.textContent = `Pot: ${pot}`;
+    }
     if (roundDisplay) roundDisplay.textContent = `Round: ${round}`;
     if (currentBetDisplay) currentBetDisplay.textContent = `Current Bet: ${currentBet}`;
 
