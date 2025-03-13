@@ -104,8 +104,10 @@ function updateUI(playersFromWebSocket = null) {
         potDisplay.textContent = `Pot: ${pot}`;
     }
     if (roundDisplay) roundDisplay.textContent = `Round: ${round}`;
-    if (currentBetDisplay) currentBetDisplay.textContent = `Current Bet: ${currentBet}`;
-
+if (currentBetDisplay) {
+    console.log("💰 Updating Current Bet Display:", currentBet);
+    currentBetDisplay.textContent = `Current Bet: ${currentBet > 0 ? currentBet : bigBlindAmount}`;
+}
    if (messageDisplay) {
         console.log(`📢 Updating UI: It's ${players[currentPlayerIndex]?.name}'s turn.`);
         messageDisplay.textContent = `It's ${players[currentPlayerIndex]?.name}'s turn.`;
@@ -210,7 +212,8 @@ if (data.type === "bigBlindAction" ) {
                 players = data.players;
                 tableCards = data.tableCards;
                 pot = data.pot;
-                currentBet = data.currentBet;
+                currentBet = data.currentBet > 0 ? data.currentBet : bigBlindAmount; // ✅ Ensure BB is set
+            console.log("💰 Current Bet received:", currentBet);
                 round = data.round;
                 currentPlayerIndex = data.currentPlayerIndex;
                 dealerIndex = data.dealerIndex;
