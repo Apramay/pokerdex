@@ -197,7 +197,9 @@ if (data.type === "bigBlindAction" || data.type === "playerTurn") {
                 round = data.round;
                 currentPlayerIndex = data.currentPlayerIndex;
                 dealerIndex = data.dealerIndex;
+                setTimeout(() => {
                 updateUI(players);
+            }, 500); 
             }
 
     } catch (error) {
