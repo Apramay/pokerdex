@@ -103,10 +103,12 @@ function updateUI(playersFromWebSocket = null) {
     if (roundDisplay) roundDisplay.textContent = `Round: ${round}`;
     if (currentBetDisplay) currentBetDisplay.textContent = `Current Bet: ${currentBet}`;
 
-    if (messageDisplay && players[currentPlayerIndex]) {
-        messageDisplay.textContent = `${players[currentPlayerIndex].name}, your turn.`;
+   if (messageDisplay) {
+        console.log(`📢 Updating UI: It's ${players[currentPlayerIndex]?.name}'s turn.`);
+        messageDisplay.textContent = `It's ${players[currentPlayerIndex]?.name}'s turn.`;
     }
 }
+
 document.addEventListener("DOMContentLoaded", function () {
     const socket = new WebSocket("wss://pokerdex-server.onrender.com"); // Replace with your server address
 
