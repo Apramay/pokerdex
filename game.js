@@ -216,9 +216,7 @@ if (data.type === "playerTurn") {
             }, 500); 
             }
 
-    } catch (error) {
-            console.error("❌ Error parsing message:", error);
-        }
+    } 
     };
 
     const startGameBtn = document.getElementById("start-game-btn");
