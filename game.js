@@ -148,7 +148,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log("🎲 Game has started!");
             }
 if (data.type === "bigBlindAction" || data.type === "playerTurn") {
-    displayMessage(data.message);
+    if (!data.options) {
+        console.warn("⚠️ No options received from server!");
+        return;
+    }
 
     checkBtn.style.display = data.options.includes("check") ? "inline" : "none";
     callBtn.style.display = data.options.includes("call") ? "inline" : "none";
