@@ -244,14 +244,18 @@ if (data.type === "bigBlindAction" || data.type === "playerTurn") {
     checkBtn.onclick = () => sendAction("check"); // ✅ Send check action when clicked
 }
 
-    function sendAction(action, amount = null) {
-    if (socket.readyState !== WebSocket.OPEN) {
+   function sendAction(action, amount = null) {
+    if (socket.readyState !== WebSocket.OPEN) return;
+
+    // ✅ Ensure currentPlayerIndex is valid
+    if (!players[currentPlayerIndex]) {
+        console.error("❌ Invalid currentPlayerIndex:", currentPlayerIndex);
         return;
     }
 
     const actionData = {
         type: action,
-        playerName: players[currentPlayerIndex].name,
+        playerName: players[currentPlayerIndex].name, // ✅ Always use the correct player
     };
 
     if (amount !== null) {
@@ -260,7 +264,7 @@ if (data.type === "bigBlindAction" || data.type === "playerTurn") {
 
     socket.send(JSON.stringify(actionData));
 
-    // ✅ Immediately update UI to reflect new state
+    // ✅ Ensure UI reflects the new state after action
     setTimeout(() => {
         socket.send(JSON.stringify({ type: "getGameState" }));
     }, 500);
