@@ -49,7 +49,7 @@ function displayCard(card) {
 
 
 function displayHand(hand) {
-    return hand.map(displayCard).join(", ");
+    return hand.map(card => `<div class="card">${displayCard(card)}</div>`).join("");
 }
 
 // UI elements and game state
