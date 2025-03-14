@@ -99,6 +99,13 @@ function updateUI(playersFromWebSocket = null) {
         `;
         playersContainer.appendChild(playerDiv);
     });
+    const myPlayerName = sessionStorage.getItem("playerName");  // Store player name when joining
+    const isMyTurn = myPlayerName === players[currentPlayerIndex].name;
+
+    document.getElementById("fold-btn").disabled = !isMyTurn;
+    document.getElementById("call-btn").disabled = !isMyTurn;
+    document.getElementById("raise-btn").disabled = !isMyTurn;
+    document.getElementById("check-btn").disabled = !isMyTurn;
 
     if (tableCardsContainer) tableCardsContainer.innerHTML = displayHand(tableCards);
     if (potDisplay) {
