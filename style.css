@@ -49,6 +49,8 @@ h1 {
 #community-cards div img,
 .player img {
     width: 75px;
+        max-width: 100%; /* Ensures it doesn’t exceed container */
+
     height: auto;
     border-radius: 5px;
     box-shadow: 2px 2px 10px rgba(255, 215, 0, 0.6);
