@@ -212,8 +212,8 @@ if (data.type === "bigBlindAction" ) {
                 players = data.players;
                 tableCards = data.tableCards;
                 pot = data.pot;
-                currentBet = data.currentBet > 0 ? data.currentBet : bigBlindAmount; // ✅ Ensure BB is set
-            console.log("💰 Current Bet received:", currentBet);
+                                currentBet = data.currentBet;
+
                 round = data.round;
                 currentPlayerIndex = data.currentPlayerIndex;
                 dealerIndex = data.dealerIndex;
