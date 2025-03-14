@@ -59,6 +59,8 @@ let pot = 0;
 let currentPlayerIndex = 0;
 let currentBet = 0;
 let round = 0;
+let smallBlindAmount = 10;
+let bigBlindAmount = 20;
 let dealerIndex = 0
 
 // UI elements
