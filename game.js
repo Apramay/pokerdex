@@ -104,10 +104,8 @@ function updateUI(playersFromWebSocket = null) {
         potDisplay.textContent = `Pot: ${pot}`;
     }
     if (roundDisplay) roundDisplay.textContent = `Round: ${round}`;
-if (currentBetDisplay) {
-    console.log("💰 Updating Current Bet Display:", currentBet);
-    currentBetDisplay.textContent = `Current Bet: ${currentBet > 0 ? currentBet : bigBlindAmount}`;
-}
+    if (currentBetDisplay) currentBetDisplay.textContent = `Current Bet: ${currentBet}`;
+
    if (messageDisplay) {
         console.log(`📢 Updating UI: It's ${players[currentPlayerIndex]?.name}'s turn.`);
         messageDisplay.textContent = `It's ${players[currentPlayerIndex]?.name}'s turn.`;
