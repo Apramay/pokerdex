@@ -122,9 +122,6 @@ function updateUI(playersFromWebSocket = null) {
     document.querySelectorAll("#action-buttons button").forEach(button => {
         button.disabled = !isCurrentPlayer;
         });
-
-    if (betInput) betInput.disabled = !isCurrentPlayer;
-
 }
 let actionHistory = [];
 
