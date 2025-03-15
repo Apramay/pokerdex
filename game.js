@@ -117,6 +117,25 @@ function updateUI(playersFromWebSocket = null) {
     }
 }
 
+let actionLog = [];
+
+// Function to update the action log in the UI
+function updateActionLog(actionMessage) {
+    // Add new action at the beginning (most recent first)
+    actionLog.unshift(actionMessage);
+
+    // Keep only the last 5 actions
+    if (actionLog.length > 5) {
+        actionLog.pop();
+    }
+
+    // Update the UI
+    const actionLogContainer = document.getElementById("action-log");
+    if (actionLogContainer) {
+        actionLogContainer.innerHTML = actionLog.map(msg => `<p>${msg}</p>`).join("");
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     const socket = new WebSocket("wss://pokerdex-server.onrender.com"); // Replace with your server address
 
@@ -223,6 +242,10 @@ if (data.type === "bigBlindAction" ) {
                 setTimeout(() => {
                 updateUI(players);
             }, 500); 
+                if (["bet", "raise", "call", "fold", "check"].includes(data.type)) {
+        let actionMessage = `🔹 ${data.playerName} ${data.type} ${data.amount ? `(${data.amount})` : ""}`;
+        updateActionLog(actionMessage);
+    }
             }
 
     } catch (error) {
