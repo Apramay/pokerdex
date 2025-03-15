@@ -91,7 +91,7 @@ function updateUI(playersFromWebSocket = null) {
     
 
             const displayedHand = player.name === players[currentPlayerIndex].name ? displayHand(player.hand) 
-                    : `<div class="card"><img src="./cards/back.jpg" alt="Card Back"></div>`
+                    : `<div class="card"><img src="https://apramay.github.io/pokerdex/cards/back.jpg" alt="Card Back"></div>`
 ;
 
 
