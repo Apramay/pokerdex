@@ -126,17 +126,16 @@ function updateUI(playersFromWebSocket = null) {
 let actionHistory = [];
 
 function updateActionHistory(actionText) {
-    if (actionHistory.length >= 5) {
-        actionHistory.shift(); // Keep only the last 5 actions
-    }
-    actionHistory.push(actionText);
-
-    // Update the UI
     const historyContainer = document.getElementById("action-history");
     if (historyContainer) {
-        historyContainer.innerHTML = actionHistory
-            .map(action => `<p>${action}</p>`)
-            .join("");
+        const actionElement = document.createElement("p");
+        actionElement.textContent = actionText;
+        historyContainer.appendChild(actionElement);
+
+        // ✅ Keep only the last 5 actions
+        while (historyContainer.children.length > 5) {
+            historyContainer.removeChild(historyContainer.firstChild);
+        }
     }
 }
 
@@ -248,6 +247,9 @@ if (data.type === "bigBlindAction" ) {
                 updateUI(players);
             }, 500); 
             }
+            if (data.type === "updateActionHistory") {
+            updateActionHistory(data.action);
+        }
 
     } catch (error) {
             console.error("❌ Error parsing message:", error);
@@ -314,8 +316,6 @@ if (data.type === "bigBlindAction" ) {
     if (amount !== null) {
         actionText += ` ${amount}`;
     }
-    updateActionHistory(actionText);
-
        
     // ✅ Ensure UI reflects the new state after action
     setTimeout(() => {
