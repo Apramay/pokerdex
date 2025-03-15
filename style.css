@@ -119,37 +119,39 @@ h1 {
 #player-input {
     margin-bottom: 20px;
 }
-#action-log-container {
+
+/* Action History Box */
+#action-history-container {
     position: absolute;
-    top: 20px;
+    top: 100px;
     right: 20px;
     width: 250px;
-    padding: 10px;
+    padding: 15px;
     background: rgba(0, 0, 0, 0.8);
-    border: 2px solid gold;
-    border-radius: 8px;
-    box-shadow: 0px 0px 10px rgba(255, 215, 0, 0.5);
     color: white;
-    text-align: left;
-    font-family: 'Montserrat', sans-serif;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 2px solid gold;
+    box-shadow: 0px 0px 10px rgba(255, 215, 0, 0.7);
 }
 
-#action-log-container h3 {
-    margin: 0;
-    font-size: 18px;
+#action-history-container h3 {
+    margin-top: 0;
     text-align: center;
     color: gold;
     text-shadow: 1px 1px 5px red;
 }
 
-#action-log {
-    max-height: 150px;
-    overflow: hidden;
+#action-history {
+    list-style: none;
+    padding: 0;
 }
 
-#action-log p {
+#action-history li {
+    padding: 8px;
     margin: 5px 0;
-    padding: 3px;
-    font-size: 14px;
-    border-bottom: 1px solid rgba(255, 215, 0, 0.5);
+    background: rgba(255, 215, 0, 0.3);
+    border-radius: 5px;
+    font-weight: bold;
 }
+
