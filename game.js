@@ -158,6 +158,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const playerName = playerNameInput.value.trim();
             if (playerName) {
                 socket.send(JSON.stringify({ type: "join", name: playerName }));
+                sessionStorage.setItem("playerName", playerName);
                 playerNameInput.value = "";
             } else {
                 console.warn("⚠️ No player name entered!");
