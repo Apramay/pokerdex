@@ -90,7 +90,9 @@ function updateUI(playersFromWebSocket = null) {
             if (index === (dealerIndex + 2) % players.length) blindIndicator = "BB ";
     
 
-            const displayedHand = player.name === players[currentPlayerIndex].name ? displayHand(player.hand) : "Hidden";
+            const displayedHand = player.name === players[currentPlayerIndex].name ? displayHand(player.hand) 
+                    : `<div class="card"><img src="./cards/back.jpg" alt="Card Back"></div>`
+;
 
 
         playerDiv.innerHTML = `
