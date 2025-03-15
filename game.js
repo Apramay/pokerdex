@@ -116,23 +116,20 @@ function updateUI(playersFromWebSocket = null) {
         messageDisplay.textContent = `It's ${players[currentPlayerIndex]?.name}'s turn.`;
     }
 }
+let actionHistory = [];
 
-let actionLog = [];
-
-// Function to update the action log in the UI
-function updateActionLog(actionMessage) {
-    // Add new action at the beginning (most recent first)
-    actionLog.unshift(actionMessage);
-
-    // Keep only the last 5 actions
-    if (actionLog.length > 5) {
-        actionLog.pop();
+function updateActionHistory(actionText) {
+    if (actionHistory.length >= 5) {
+        actionHistory.shift(); // Keep only the last 5 actions
     }
+    actionHistory.push(actionText);
 
     // Update the UI
-    const actionLogContainer = document.getElementById("action-log");
-    if (actionLogContainer) {
-        actionLogContainer.innerHTML = actionLog.map(msg => `<p>${msg}</p>`).join("");
+    const historyContainer = document.getElementById("action-history");
+    if (historyContainer) {
+        historyContainer.innerHTML = actionHistory
+            .map(action => `<p>${action}</p>`)
+            .join("");
     }
 }
 
@@ -242,10 +239,6 @@ if (data.type === "bigBlindAction" ) {
                 setTimeout(() => {
                 updateUI(players);
             }, 500); 
-                if (["bet", "raise", "call", "fold", "check"].includes(data.type)) {
-        let actionMessage = `🔹 ${data.playerName} ${data.type} ${data.amount ? `(${data.amount})` : ""}`;
-        updateActionLog(actionMessage);
-    }
             }
 
     } catch (error) {
@@ -309,7 +302,13 @@ if (data.type === "bigBlindAction" ) {
     }
 
     socket.send(JSON.stringify(actionData));
+       let actionText = `${players[currentPlayerIndex].name} ${action}`;
+    if (amount !== null) {
+        actionText += ` ${amount}`;
+    }
+    updateActionHistory(actionText);
 
+       
     // ✅ Ensure UI reflects the new state after action
     setTimeout(() => {
         socket.send(JSON.stringify({ type: "getGameState" }));
