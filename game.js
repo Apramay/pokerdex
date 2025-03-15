@@ -115,6 +115,16 @@ function updateUI(playersFromWebSocket = null) {
         console.log(`📢 Updating UI: It's ${players[currentPlayerIndex]?.name}'s turn.`);
         messageDisplay.textContent = `It's ${players[currentPlayerIndex]?.name}'s turn.`;
     }
+    const playerName = sessionStorage.getItem("playerName");
+
+    // ✅ Enable buttons **only** for the current player
+    const isCurrentPlayer = players[currentPlayerIndex]?.name === playerName;
+    document.querySelectorAll("#action-buttons button").forEach(button => {
+        button.disabled = !isCurrentPlayer;
+        });
+
+    if (betInput) betInput.disabled = !isCurrentPlayer;
+
 }
 let actionHistory = [];
 
