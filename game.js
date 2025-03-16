@@ -78,11 +78,9 @@ function updateUI(playersFromWebSocket = null) {
     if (!playersContainer) return;
 
     playersContainer.innerHTML = "";
-    
     players.forEach((player, index) => {
         const playerDiv = document.createElement("div");
         playerDiv.classList.add("player");
-        
 
          let dealerIndicator = index === dealerIndex ? "D " : "";
         let currentPlayerIndicator = index === currentPlayerIndex ? "➡️ " : "";
@@ -188,53 +186,6 @@ document.addEventListener("DOMContentLoaded", function () {
             if (data.type === "startGame") {
                 console.log("🎲 Game has started!");
             }
-            if (data.type === "showdown") {
-        console.log("🏆 Showdown! Revealing winner's hand.");
-
-        // Update UI to show the winner's hand above their username
-        data.winningHands.forEach(winner => {
-            let playerDiv = document.querySelector(`#player-${winner.name}`);
-            if (playerDiv) {
-                let handDiv = document.createElement("div");
-                handDiv.classList.add("revealed-hand");
-                handDiv.innerHTML = displayHand(winner.hand);
-                playerDiv.appendChild(handDiv);
-            }
-        });
-                 // Provide reveal buttons for other active players
-        let revealContainer = document.getElementById("reveal-options");
-        revealContainer.innerHTML = "";
-
-        data.revealOptions.forEach(player => {
-            let revealBtn = document.createElement("button");
-            revealBtn.innerText = `Reveal Hand (${player.name})`;
-            revealBtn.onclick = function () {
-                socket.send(JSON.stringify({ type: "revealHand", playerName: player.name }));
-            };
-            revealContainer.appendChild(revealBtn);
-        });
-    }
-
- if (data.type === "winnerCanReveal") {
-        console.log("👑 Winner can choose to reveal their hand.");
-        let revealBtn = document.createElement("button");
-        revealBtn.innerText = `Reveal Hand (${data.winner})`;
-        revealBtn.onclick = function () {
-            socket.send(JSON.stringify({ type: "revealHand", playerName: data.winner }));
-        };
-        document.getElementById("reveal-options").appendChild(revealBtn);
-    }
-     if (data.type === "updateSidebar") {
-        console.log("📜 Updating sidebar with winning hands.");
-        let sidebar = document.getElementById("hand-history");
-        let entry = document.createElement("p");
-        entry.innerHTML = `<strong>${data.history.map(h => h.name).join(", ")}</strong>: ${data.history.map(h => displayHand(h.hand)).join(" | ")}`;
-        sidebar.appendChild(entry);
-    }
-            if (data.type === "resetRevealedHands") {
-        console.log("🆕 New hand started. Clearing revealed hands.");
-        document.querySelectorAll(".revealed-hand").forEach(element => element.remove());
-    }
 if (data.type === "bigBlindAction" ) {
     if (!data.options) {
         console.warn("⚠️ No options received from server!");
