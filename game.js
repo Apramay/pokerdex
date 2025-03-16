@@ -188,24 +188,41 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             if (data.type === "showdown") {
         console.log("🏆 Showdown! Revealing winner's hand.");
-        updateUI();  // Ensure the UI updates with revealed winner hands
-    }
-if (data.type === "revealOptions") {
-        console.log("👀 Giving players the option to reveal their hands.");
-        let revealContainer = document.getElementById("reveal-options");
-        revealContainer.innerHTML = "";
-    data.players.forEach(player => {
-            if (player.canReveal) {
-                let revealBtn = document.createElement("button");
-                revealBtn.innerText = `Reveal Hand (${player.name})`;
-                revealBtn.onclick = function () {
-                    socket.send(JSON.stringify({ type: "revealHand", playerName: player.name }));
-                };
-                revealContainer.appendChild(revealBtn);
+
+        // Update UI to show the winner's hand above their username
+        data.winningHands.forEach(winner => {
+            let playerDiv = document.querySelector(`#player-${winner.name}`);
+            if (playerDiv) {
+                let handDiv = document.createElement("div");
+                handDiv.classList.add("revealed-hand");
+                handDiv.innerHTML = displayHand(winner.hand);
+                playerDiv.appendChild(handDiv);
             }
         });
+                 // Provide reveal buttons for other active players
+        let revealContainer = document.getElementById("reveal-options");
+        revealContainer.innerHTML = "";
+
+        data.revealOptions.forEach(player => {
+            let revealBtn = document.createElement("button");
+            revealBtn.innerText = `Reveal Hand (${player.name})`;
+            revealBtn.onclick = function () {
+                socket.send(JSON.stringify({ type: "revealHand", playerName: player.name }));
+            };
+            revealContainer.appendChild(revealBtn);
+        });
     }
-    if (data.type === "updateSidebar") {
+
+ if (data.type === "winnerCanReveal") {
+        console.log("👑 Winner can choose to reveal their hand.");
+        let revealBtn = document.createElement("button");
+        revealBtn.innerText = `Reveal Hand (${data.winner})`;
+        revealBtn.onclick = function () {
+            socket.send(JSON.stringify({ type: "revealHand", playerName: data.winner }));
+        };
+        document.getElementById("reveal-options").appendChild(revealBtn);
+    }
+     if (data.type === "updateSidebar") {
         console.log("📜 Updating sidebar with winning hands.");
         let sidebar = document.getElementById("hand-history");
         let entry = document.createElement("p");
