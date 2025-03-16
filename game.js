@@ -186,6 +186,32 @@ document.addEventListener("DOMContentLoaded", function () {
             if (data.type === "startGame") {
                 console.log("🎲 Game has started!");
             }
+            if (data.type === "showdown") {
+        console.log("🏆 Showdown! Revealing winner's hand.");
+        updateUI();  // Ensure the UI updates with revealed winner hands
+    }
+if (data.type === "revealOptions") {
+        console.log("👀 Giving players the option to reveal their hands.");
+        let revealContainer = document.getElementById("reveal-options");
+        revealContainer.innerHTML = "";
+    data.players.forEach(player => {
+            if (player.canReveal) {
+                let revealBtn = document.createElement("button");
+                revealBtn.innerText = `Reveal Hand (${player.name})`;
+                revealBtn.onclick = function () {
+                    socket.send(JSON.stringify({ type: "revealHand", playerName: player.name }));
+                };
+                revealContainer.appendChild(revealBtn);
+            }
+        });
+    }
+    if (data.type === "updateSidebar") {
+        console.log("📜 Updating sidebar with winning hands.");
+        let sidebar = document.getElementById("hand-history");
+        let entry = document.createElement("p");
+        entry.innerHTML = `<strong>${data.history.map(h => h.name).join(", ")}</strong>: ${data.history.map(h => displayHand(h.hand)).join(" | ")}`;
+        sidebar.appendChild(entry);
+    }
 if (data.type === "bigBlindAction" ) {
     if (!data.options) {
         console.warn("⚠️ No options received from server!");
