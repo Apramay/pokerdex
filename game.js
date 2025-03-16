@@ -78,9 +78,11 @@ function updateUI(playersFromWebSocket = null) {
     if (!playersContainer) return;
 
     playersContainer.innerHTML = "";
+    
     players.forEach((player, index) => {
         const playerDiv = document.createElement("div");
         playerDiv.classList.add("player");
+        
 
          let dealerIndicator = index === dealerIndex ? "D " : "";
         let currentPlayerIndicator = index === currentPlayerIndex ? "➡️ " : "";
@@ -228,6 +230,10 @@ document.addEventListener("DOMContentLoaded", function () {
         let entry = document.createElement("p");
         entry.innerHTML = `<strong>${data.history.map(h => h.name).join(", ")}</strong>: ${data.history.map(h => displayHand(h.hand)).join(" | ")}`;
         sidebar.appendChild(entry);
+    }
+            if (data.type === "resetRevealedHands") {
+        console.log("🆕 New hand started. Clearing revealed hands.");
+        document.querySelectorAll(".revealed-hand").forEach(element => element.remove());
     }
 if (data.type === "bigBlindAction" ) {
     if (!data.options) {
