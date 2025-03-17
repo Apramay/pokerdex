@@ -138,28 +138,6 @@ function updateActionHistory(actionText) {
         }
     }
 }
-function showShowHideButtons() {
-    const buttonsContainer = document.getElementById("show-hide-buttons");
-    buttonsContainer.style.display = "block"; // ✅ Make buttons visible
-
-    document.getElementById("show-cards-btn").onclick = function () {
-        sendShowHideDecision("show");
-    };
-    document.getElementById("hide-cards-btn").onclick = function () {
-        sendShowHideDecision("hide");
-    };
-}
-
-function sendShowHideDecision(choice) {
-    socket.send(JSON.stringify({
-        type: "showHideDecision",
-        playerName: sessionStorage.getItem("playerName"),
-        choice: choice
-    }));
-
-    // ✅ Hide buttons after choosing
-    document.getElementById("show-hide-buttons").style.display = "none";
-}
 
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -222,6 +200,28 @@ document.addEventListener("DOMContentLoaded", function () {
             showShowHideButtons();
         }
     }
+            function showShowHideButtons() {
+    const buttonsContainer = document.getElementById("show-hide-buttons");
+    buttonsContainer.style.display = "block"; // ✅ Make buttons visible
+
+    document.getElementById("show-cards-btn").onclick = function () {
+        sendShowHideDecision("show");
+    };
+    document.getElementById("hide-cards-btn").onclick = function () {
+        sendShowHideDecision("hide");
+    };
+}
+
+function sendShowHideDecision(choice) {
+    socket.send(JSON.stringify({
+        type: "showHideDecision",
+        playerName: sessionStorage.getItem("playerName"),
+        choice: choice
+    }));
+
+    // ✅ Hide buttons after choosing
+    document.getElementById("show-hide-buttons").style.display = "none";
+}
 
 if (data.type === "bigBlindAction" ) {
     if (!data.options) {
