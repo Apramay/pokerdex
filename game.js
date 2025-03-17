@@ -140,18 +140,25 @@ function updateActionHistory(actionText) {
 }
 function showShowHideButtons() {
     const buttonsContainer = document.getElementById("show-hide-buttons");
-    buttonsContainer.innerHTML = `
-        <button onclick="sendShowHideDecision('show')">Show Cards</button>
-        <button onclick="sendShowHideDecision('hide')">Hide Cards</button>
-    `;
+    buttonsContainer.style.display = "block"; // ✅ Make buttons visible
+
+    document.getElementById("show-cards-btn").onclick = function () {
+        sendShowHideDecision("show");
+    };
+    document.getElementById("hide-cards-btn").onclick = function () {
+        sendShowHideDecision("hide");
+    };
 }
+
 function sendShowHideDecision(choice) {
     socket.send(JSON.stringify({
         type: "showHideDecision",
         playerName: sessionStorage.getItem("playerName"),
         choice: choice
     }));
-    document.getElementById("show-hide-buttons").innerHTML = ""; // Remove buttons after decision
+
+    // ✅ Hide buttons after choosing
+    document.getElementById("show-hide-buttons").style.display = "none";
 }
 
 
