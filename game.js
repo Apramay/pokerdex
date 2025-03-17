@@ -190,7 +190,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (data.type === "showdown") {
         console.log("🏆 Showdown results received!");
         data.winners.forEach(winner => {
-            console.log(`🎉 ${winner.playerName} won with: ${displayHand(winner.hand)}`);
+            console.log(`🎉 ${winner.playerName} won with: ${displayHand(winner.bestHand)}`);
         });
         updateUI(); // ✅ Ensure UI reflects the winning hands
     }
