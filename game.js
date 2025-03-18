@@ -250,6 +250,14 @@ if (data.type === "bigBlindAction" ) {
             if (data.type === "updateActionHistory") {
             updateActionHistory(data.action);
         }
+            if (data.type === "winner") {
+            console.log("🏆 Winners:", data.winners);
+
+            data.winners.forEach(winner => {
+                let actionText = `🏆 ${winner.name} wins with ${winner.bestHand}`;
+                updateActionHistory(actionText);
+            });
+        }
 
     } catch (error) {
             console.error("❌ Error parsing message:", error);
