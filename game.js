@@ -151,6 +151,11 @@ function showShowHideButtons() {
 }
 
 function sendShowHideDecision(choice) {
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+        console.error("❌ WebSocket is not connected!");
+        return;
+    }
+
     socket.send(JSON.stringify({
         type: "showHideDecision",
         playerName: sessionStorage.getItem("playerName"),
@@ -160,7 +165,6 @@ function sendShowHideDecision(choice) {
     // ✅ Hide buttons after choosing
     document.getElementById("show-hide-buttons").style.display = "none";
 }
-
 
 document.addEventListener("DOMContentLoaded", function () {
     const socket = new WebSocket("wss://pokerdex-server.onrender.com"); // Replace with your server address
@@ -216,12 +220,16 @@ document.addEventListener("DOMContentLoaded", function () {
         });
         updateUI(); // ✅ Ensure UI reflects the winning hands
     }
-            if (data.type === "showOrHideCards") {
-        console.log("👀 Giving players the option to show or hide their cards");
-        if (data.remainingPlayers.includes(sessionStorage.getItem("playerName"))) {
-            showShowHideButtons();
-        }
+           if (data.type === "showOrHideCards") {
+    console.log("👀 Show/Hide option available");
+    const playerName = sessionStorage.getItem("playerName");
+
+    if (data.remainingPlayers.includes(playerName)) {
+        showShowHideButtons();
+    } else {
+        console.log("✅ You are not required to show or hide cards.");
     }
+}
 
 if (data.type === "bigBlindAction" ) {
     if (!data.options) {
