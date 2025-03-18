@@ -138,17 +138,6 @@ function updateActionHistory(actionText) {
         }
     }
 }
-function showShowHideButtons() {
-    const buttonsContainer = document.getElementById("show-hide-buttons");
-    buttonsContainer.style.display = "block"; // ✅ Make buttons visible
-
-    document.getElementById("show-cards-btn").onclick = function () {
-        sendShowHideDecision("show");
-    };
-    document.getElementById("hide-cards-btn").onclick = function () {
-        sendShowHideDecision("hide");
-    };
-}
 
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -302,6 +291,18 @@ function sendShowHideDecision(choice) {
     // ✅ Hide buttons after choosing
     document.getElementById("show-hide-buttons").style.display = "none";
 }
+    function showShowHideButtons() {
+    const buttonsContainer = document.getElementById("show-hide-buttons");
+    buttonsContainer.style.display = "block"; // ✅ Make buttons visible
+
+    document.getElementById("show-cards-btn").onclick = function () {
+        sendShowHideDecision("show");
+    };
+    document.getElementById("hide-cards-btn").onclick = function () {
+        sendShowHideDecision("hide");
+    };
+}
+
 
     const startGameBtn = document.getElementById("start-game-btn");
     if (startGameBtn) {
