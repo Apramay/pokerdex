@@ -150,21 +150,6 @@ function showShowHideButtons() {
     };
 }
 
-function sendShowHideDecision(choice) {
-    if (!socket || socket.readyState !== WebSocket.OPEN) {
-        console.error("❌ WebSocket is not connected!");
-        return;
-    }
-
-    socket.send(JSON.stringify({
-        type: "showHideDecision",
-        playerName: sessionStorage.getItem("playerName"),
-        choice: choice
-    }));
-
-    // ✅ Hide buttons after choosing
-    document.getElementById("show-hide-buttons").style.display = "none";
-}
 
 document.addEventListener("DOMContentLoaded", function () {
     const socket = new WebSocket("wss://pokerdex-server.onrender.com"); // Replace with your server address
@@ -230,6 +215,7 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("✅ You are not required to show or hide cards.");
     }
 }
+            
 
 if (data.type === "bigBlindAction" ) {
     if (!data.options) {
@@ -300,6 +286,22 @@ if (data.type === "bigBlindAction" ) {
             console.error("❌ Error parsing message:", error);
         }
     };
+    
+function sendShowHideDecision(choice) {
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+        console.error("❌ WebSocket is not connected!");
+        return;
+    }
+
+    socket.send(JSON.stringify({
+        type: "showHideDecision",
+        playerName: sessionStorage.getItem("playerName"),
+        choice: choice
+    }));
+
+    // ✅ Hide buttons after choosing
+    document.getElementById("show-hide-buttons").style.display = "none";
+}
 
     const startGameBtn = document.getElementById("start-game-btn");
     if (startGameBtn) {
