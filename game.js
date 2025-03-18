@@ -138,6 +138,29 @@ function updateActionHistory(actionText) {
         }
     }
 }
+function showShowHideButtons() {
+    const buttonsContainer = document.getElementById("show-hide-buttons");
+    buttonsContainer.style.display = "block"; // ✅ Make buttons visible
+
+    document.getElementById("show-cards-btn").onclick = function () {
+        sendShowHideDecision("show");
+    };
+    document.getElementById("hide-cards-btn").onclick = function () {
+        sendShowHideDecision("hide");
+    };
+}
+
+function sendShowHideDecision(choice) {
+    socket.send(JSON.stringify({
+        type: "showHideDecision",
+        playerName: sessionStorage.getItem("playerName"),
+        choice: choice
+    }));
+
+    // ✅ Hide buttons after choosing
+    document.getElementById("show-hide-buttons").style.display = "none";
+}
+
 
 document.addEventListener("DOMContentLoaded", function () {
     const socket = new WebSocket("wss://pokerdex-server.onrender.com"); // Replace with your server address
@@ -186,6 +209,20 @@ document.addEventListener("DOMContentLoaded", function () {
             if (data.type === "startGame") {
                 console.log("🎲 Game has started!");
             }
+            if (data.type === "showdown") {
+        console.log("🏆 Showdown results received!");
+        data.winners.forEach(winner => {
+            console.log(`🎉 ${winner.playerName} won with: ${displayHand(winner.hand)}`);
+        });
+        updateUI(); // ✅ Ensure UI reflects the winning hands
+    }
+            if (data.type === "showOrHideCards") {
+        console.log("👀 Giving players the option to show or hide their cards");
+        if (data.remainingPlayers.includes(sessionStorage.getItem("playerName"))) {
+            showShowHideButtons();
+        }
+    }
+
 if (data.type === "bigBlindAction" ) {
     if (!data.options) {
         console.warn("⚠️ No options received from server!");
@@ -249,14 +286,6 @@ if (data.type === "bigBlindAction" ) {
             }
             if (data.type === "updateActionHistory") {
             updateActionHistory(data.action);
-        }
-            if (data.type === "winner") {
-            console.log("🏆 Winners:", data.winners);
-
-            data.winners.forEach(winner => {
-                let actionText = `🏆 ${winner.name} wins with ${winner.bestHand}`;
-                updateActionHistory(actionText);
-            });
         }
 
     } catch (error) {
