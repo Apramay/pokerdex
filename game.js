@@ -34,16 +34,16 @@ function dealHand(deck, numCards) {
 function displayCard(card) {
     if (!card || !card.suit || !card.rank) {
         console.warn("⚠️ Invalid card data received:", card);
-        return `<img src="./cards/default.png" alt="Invalid Card">`;
+        return `<img src="https://d2oebwuonud7tt.cloudfront.net/cards/default.png" alt="Invalid Card">`;
     }
 
     const rank = card.rank;
     const suit = card.suit.toLowerCase();
     const imageName = `${rank}_of_${suit}.png`;
 
-    return `<img src="https://apramay.github.io/pokerdex/cards/${imageName}" 
+    return `<img src="https://d2oebwuonud7tt.cloudfront.net/cards/${imageName}" 
             alt="${rank} of ${suit}" 
-            onerror="this.onerror=null; this.src='./cards/default.png';">`;
+            onerror="this.onerror=null; this.src='https://d2oebwuonud7tt.cloudfront.net/cards/default.png';">`;
 }
 
 
@@ -141,7 +141,7 @@ function updateActionHistory(actionText) {
 
 
 document.addEventListener("DOMContentLoaded", function () {
-    const socket = new WebSocket("wss://pokerdex-server.onrender.com"); // Replace with your server address
+    const socket = new WebSocket("wss://3.132.149.194:8080"); // Replace with your server address
 
     socket.onopen = () => {
         console.log("✅ Connected to WebSocket server");
