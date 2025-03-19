@@ -141,7 +141,7 @@ function updateActionHistory(actionText) {
 
 
 document.addEventListener("DOMContentLoaded", function () {
-    const socket = new WebSocket("wss://3.132.149.194:8080"); // Replace with your server address
+    const socket = new WebSocket("ws://3.132.149.194:8080"); // Replace with your server address
 
     socket.onopen = () => {
         console.log("✅ Connected to WebSocket server");
