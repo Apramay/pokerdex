@@ -146,6 +146,37 @@ document.addEventListener("DOMContentLoaded", function () {
     socket.onopen = () => {
         console.log("✅ Connected to WebSocket server");
     };
+    const openTableBtn = document.getElementById("open-table-btn");
+    const tableOptionsContainer = document.getElementById("table-options");
+
+    if (openTableBtn && tableOptionsContainer) {
+        openTableBtn.onclick = function () {
+            // Show table selection options
+            tableOptionsContainer.innerHTML = `
+                <button id="invite-friends-btn">Invite Friends</button>
+                <button id="join-public-btn">Join Public Table</button>
+            `;
+
+            document.getElementById("invite-friends-btn").onclick = createPrivateTable;
+            document.getElementById("join-public-btn").onclick = joinPublicTable;
+        };
+    }
+
+    function createPrivateTable() {
+        const tableId = Date.now().toString(); // Generate a unique table ID
+        sessionStorage.setItem("tableId", tableId); // Store table ID locally
+
+        socket.send(JSON.stringify({ type: "createTable", tableId }));
+
+        alert(`Table Created! Share this ID with friends: ${tableId}`);
+    }
+
+    function joinPublicTable() {
+        socket.send(JSON.stringify({ type: "joinPublicTable" }));
+    }
+
+    // Listen for table assignment from the server
+   
 
     const addPlayerBtn = document.getElementById("add-player-btn");
     const playerNameInput = document.getElementById("player-name-input");
@@ -183,6 +214,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log("🔄 Updating players list:", data.players);
                 updateUI(data.players);
             }
+             
+
+        if (data.type === "tableAssigned") {
+            sessionStorage.setItem("tableId", data.tableId);
+            alert(`Joined Table: ${data.tableId}`);
+        }
             
             if (data.type === "startGame") {
                 console.log("🎲 Game has started!");
