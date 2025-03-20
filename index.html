@@ -1,4 +1,29 @@
 <!DOCTYPE html>
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const tableId = urlParams.get("tableId");
+
+    if (!tableId) {
+        alert("No table ID provided! Redirecting to lobby...");
+        window.location.href = "lobby.html";
+    }
+
+    const playerName = sessionStorage.getItem("playerName") || prompt("Enter your name:");
+    sessionStorage.setItem("playerName", playerName);
+
+    const socket = new WebSocket("ws://localhost:8080");
+
+    socket.onopen = () => {
+        console.log("✅ Connected to WebSocket");
+        socket.send(JSON.stringify({ type: "joinTable", tableId, name: playerName }));
+    };
+
+    socket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log("📩 Received:", data);
+    };
+</script>
+
 <html>
 <head>
     <title>Pokerdex</title>
