@@ -1,13 +1,29 @@
-// table.js - Handles table creation and routing
-document.addEventListener("DOMContentLoaded", function () {
-    const urlParams = new URLSearchParams(window.location.search);
-    const tableId = urlParams.get("table");
+function createTable() {
+    const tableId = Math.random().toString(36).substr(2, 8); // Unique ID
+    const tableUrl = `${window.location.origin}/pokerdex/game.html?table=${tableId}`;
 
-    if (!tableId) {
-        // No table ID provided, redirect back to the lobby
-        window.location.href = "/pokerdex/index.html";
-    } else {
-        // Redirect to the actual game page with the specific table ID
-        window.location.href = `/pokerdex/game.html?table=${tableId}`;
+    // Show table link
+    document.getElementById("tableUrl").value = tableUrl;
+    document.getElementById("tableLink").style.display = "block";
+
+    // Send table info to the backend
+    fetch("/registerTable", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ tableId }),
+    }).catch(err => console.error("Error registering table:", err));
+}
+
+function joinTable() {
+    const tableId = prompt("Enter the table ID:");
+    if (tableId) {
+        window.location.href = `${window.location.origin}/pokerdex/game.html?table=${tableId}`;
     }
-});
+}
+
+function copyLink() {
+    const tableUrl = document.getElementById("tableUrl");
+    tableUrl.select();
+    document.execCommand("copy");
+    alert("Link copied!");
+}
