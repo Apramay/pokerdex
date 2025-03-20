@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poker Lobby</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #222;
+            color: white;
+        }
+        #tables-list {
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to Poker Lobby</h1>
+    
+    <label for="nickname">Enter your name:</label>
+    <input type="text" id="nickname" placeholder="Your Name">
+    <button onclick="createTable()">Create New Table</button>
+
+    <h2>Join an Open Table</h2>
+    <div id="tables-list"></div>
+
+    <script>
+        const serverUrl = "http://localhost:8080"; // Change this to your deployed backend
+
+        function createTable() {
+            const nickname = document.getElementById("nickname").value.trim();
+            if (!nickname) {
+                alert("Please enter your name");
+                return;
+            }
+
+            fetch(`${serverUrl}/createTable`, { method: "POST" })
+                .then(res => res.json())
+                .then(data => {
+                    sessionStorage.setItem("playerName", nickname);
+                    sessionStorage.setItem("tableId", data.tableId);
+                    window.location.href = `index.html?tableId=${data.tableId}`;
+                })
+                .catch(err => console.error("Error creating table:", err));
+        }
+
+        function fetchTables() {
+            fetch(`${serverUrl}/getTables`)
+                .then(res => res.json())
+                .then(tables => {
+                    const tablesList = document.getElementById("tables-list");
+                    tablesList.innerHTML = "";
+
+                    Object.keys(tables).forEach(tableId => {
+                        const btn = document.createElement("button");
+                        btn.textContent = `Join Table ${tableId}`;
+                        btn.onclick = () => joinTable(tableId);
+                        tablesList.appendChild(btn);
+                    });
+                })
+                .catch(err => console.error("Error fetching tables:", err));
+        }
+
+        function joinTable(tableId) {
+            const nickname = document.getElementById("nickname").value.trim();
+            if (!nickname) {
+                alert("Please enter your name");
+                return;
+            }
+
+            sessionStorage.setItem("playerName", nickname);
+            sessionStorage.setItem("tableId", tableId);
+            window.location.href = `index.html?tableId=${tableId}`;
+        }
+
+        // Fetch available tables on page load
+        fetchTables();
+        setInterval(fetchTables, 5000); // Refresh table list every 5 seconds
+    </script>
+</body>
+</html>
