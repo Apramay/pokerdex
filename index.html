@@ -33,29 +33,6 @@
         <input type="text" id="tableUrl" readonly>
         <button onclick="copyLink()">Copy Link</button>
     </div>
-
-    <script>
-        function createTable() {
-            const tableId = Math.random().toString(36).substr(2, 8); // Generate a short random ID
-            const tableUrl = `${window.location.origin}/pokerdex/game.html?table=${tableId}`;
-            document.getElementById("tableUrl").value = tableUrl;
-            document.getElementById("tableLink").style.display = "block";
-        }
-
-        function joinTable() {
-            const tableId = prompt("Enter the table ID:");
-            if (tableId) {
-        window.location.href = `${window.location.origin}/pokerdex/game.html?table=${tableId}`;  // Replace 'repo-name' with your actual repository name
-            }
-        }
-
-        function copyLink() {
-            const tableUrl = document.getElementById("tableUrl");
-            tableUrl.select();
-            document.execCommand("copy");
-            alert("Link copied!");
-        }
-    </script>
 <script src="table.js"></script>
 </body>
 </html>
