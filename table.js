@@ -1,10 +1,10 @@
-const urlParams = new URLSearchParams(window.location.search);
-const tableId = urlParams.get("table");
+document.addEventListener("DOMContentLoaded", function () {
+    const createTableBtn = document.getElementById("create-table-btn");
 
-if (!tableId) {
-    alert("Invalid table. Returning to homepage.");
-    window.location.href = "/";
-}
-
-// Redirect to the game, but ensure a unique session per table
-window.location.href = `/game.html?table=${tableId}`;
+    if (createTableBtn) {
+        createTableBtn.addEventListener("click", function () {
+            const tableId = Math.random().toString(36).substr(2, 9); // Generate unique table ID
+            window.location.href = `/game.html?table=${tableId}`; // Redirect to game with table ID
+        });
+    }
+});
