@@ -36,7 +36,7 @@
     <script>
         function createTable() {
             const tableId = Math.random().toString(36).substr(2, 8); // Generate a short random ID
-            const tableUrl = `${window.location.origin}/game.html?table=${tableId}`;
+            const tableUrl = `${window.location.origin}/pokerdex/game.html?table=${tableId}`;
             document.getElementById("tableUrl").value = tableUrl;
             document.getElementById("tableLink").style.display = "block";
         }
@@ -44,7 +44,7 @@
         function joinTable() {
             const tableId = prompt("Enter the table ID:");
             if (tableId) {
-                window.location.href = `/game.html?table=${tableId}`;
+        window.location.href = `${window.location.origin}/pokerdex/game.html?table=${tableId}`;  // Replace 'repo-name' with your actual repository name
             }
         }
 
