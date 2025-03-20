@@ -1,12 +1,12 @@
 function createTable() {
-    const tableId = Math.random().toString(36).substr(2, 8); // Unique ID
+    const tableId = Math.random().toString(36).substr(2, 8); // Generate unique table ID
     const tableUrl = `${window.location.origin}/pokerdex/game.html?table=${tableId}`;
 
     // Show table link
     document.getElementById("tableUrl").value = tableUrl;
     document.getElementById("tableLink").style.display = "block";
 
-    // Send table info to the backend
+    // Notify server to register this new table
     fetch("/registerTable", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
