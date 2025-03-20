@@ -45,6 +45,34 @@
 </div>
             
     </div>
+        <script>
+    // Extract table ID from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const tableId = urlParams.get("table");
+
+    if (!tableId) {
+        alert("No table ID found! Returning to homepage.");
+        window.location.href = "/";
+    }
+
+    // Connect to the server and join the specific table
+    const socket = io();
+    socket.emit("joinTable", tableId);
+
+    // Store table ID globally so game.js can access it
+    window.tableId = tableId;
+
+    // Modify socket events to use table-specific events
+    socket.on("updateGame", (gameState) => {
+        if (gameState.tableId === tableId) {
+            updateGameUI(gameState);
+        }
+    });
+
+    function sendGameAction(action) {
+        socket.emit("gameAction", { tableId, action });
+    }
+</script>
     <script src="game.js"></script>
 </body>
 </html>
