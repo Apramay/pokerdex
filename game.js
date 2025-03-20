@@ -71,8 +71,8 @@ const roundDisplay = document.getElementById("round");
 const currentBetDisplay = document.getElementById("currentBet");
 const messageDisplay = document.getElementById("message");
 function updateUI(playersFromWebSocket = null) {
-    if (playersFromWebSocket) {
-        players = playersFromWebSocket;
+    if (playersFromWebSocket && tableId) {
+        players = playersFromWebSocket.filter(player => player.tableId === tableId);
     }
 
     if (!playersContainer) return;
@@ -141,11 +141,25 @@ function updateActionHistory(actionText) {
 
 
 document.addEventListener("DOMContentLoaded", function () {
-    const socket = new WebSocket("wss://pokerdex-server.onrender.com"); // Replace with your server address
+const urlParams = new URLSearchParams(window.location.search);
+const tableId = urlParams.get("tableId");
 
-    socket.onopen = () => {
-        console.log("✅ Connected to WebSocket server");
-    };
+if (!tableId) {
+    alert("No table ID found! Returning to lobby...");
+    window.location.href = "lobby.html";
+}
+
+const playerName = sessionStorage.getItem("playerName") || prompt("Enter your name:");
+sessionStorage.setItem("playerName", playerName);
+
+const socket = new WebSocket("wss://pokerdex-server.onrender.com");
+
+socket.onopen = () => {
+    console.log("✅ Connected to WebSocket server");
+    socket.send(JSON.stringify({ type: "joinTable", tableId, name: playerName }));
+};
+
+    
 
     const addPlayerBtn = document.getElementById("add-player-btn");
     const playerNameInput = document.getElementById("player-name-input");
@@ -179,6 +193,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         try {
             let data = JSON.parse(event.data);
+            if (data.tableId && data.tableId !== tableId) return;
+
+    console.log("📩 Received message from WebSocket:", data);
             if (data.type === "updatePlayers") {
                 console.log("🔄 Updating players list:", data.players);
                 updateUI(data.players);
@@ -219,26 +236,27 @@ if (data.type === "bigBlindAction" ) {
     raiseBtn.style.display = data.options.includes("raise") ? "inline" : "none";
 
 
-    checkBtn.onclick = () => {
-        socket.send(JSON.stringify({ type: "check", playerName: players[currentPlayerIndex].name }));
-    };
+    document.getElementById("fold-btn").onclick = () => {
+    socket.send(JSON.stringify({ type: "fold", tableId, playerName: players[currentPlayerIndex].name }));
+};
 
-    callBtn.onclick = () => {
-        socket.send(JSON.stringify({ type: "call", playerName: players[currentPlayerIndex].name }));
-    };
+document.getElementById("call-btn").onclick = () => {
+    socket.send(JSON.stringify({ type: "call", tableId, playerName: players[currentPlayerIndex].name }));
+};
 
-    raiseBtn.onclick = () => {
-        const amount = parseInt(betInput.value);
-        if (!isNaN(amount)) {
-            socket.send(JSON.stringify({ type: "raise", playerName: players[currentPlayerIndex].name, amount }));
-        } else {
-            displayMessage("Invalid raise amount.");
-        }
-    };
+document.getElementById("raise-btn").onclick = () => {
+    const amount = parseInt(document.getElementById("bet-input").value);
+    if (!isNaN(amount)) {
+        socket.send(JSON.stringify({ type: "raise", tableId, playerName: players[currentPlayerIndex].name, amount }));
+    } else {
+        console.warn("⚠️ Invalid raise amount!");
+    }
+};
 
-    foldBtn.onclick = () => {
-        socket.send(JSON.stringify({ type: "fold", playerName: players[currentPlayerIndex].name }));
-    };
+document.getElementById("check-btn").onclick = () => {
+    socket.send(JSON.stringify({ type: "check", tableId, playerName: players[currentPlayerIndex].name }));
+};
+
 }
 
              if (data.type === "playerTurn") {
