@@ -197,11 +197,10 @@ console.log("✅ Connected to table:", currentTableId);
             }
         const gameState = gameStates.get(tableId);
 
-            if (data.type === "updatePlayers") {
-                console.log("🔄 Updating players list:", data.players);
-            gameState.players = data.players;
-                updateUI(tableId, data.players);
-            }
+            if (data.type === "updatePlayers" && data.tableId === currentTableId) {
+    updateUI(currentTableId, data.players);
+}
+
             
             if (data.type === "startGame") {
                 console.log("🎲 Game has started!");
@@ -272,7 +271,7 @@ if (data.type === "bigBlindAction" ) {
     }
 }
 
-            if (data.type === "updateGameState") {
+           if (data.type === "updateGameState" && data.tableId === currentTableId) {
                 console.log("🔄 Updating game state:", data);
                 let gameState = gameStates.get(tableId);
                 gameState.players = data.players;
@@ -284,7 +283,7 @@ if (data.type === "bigBlindAction" ) {
                 gameState.currentPlayerIndex = data.currentPlayerIndex;
                 gameState.dealerIndex = data.dealerIndex;
                 setTimeout(() => {
-                updateUI(tableId);
+                updateUI(currentTableId, data.players);;
             }, 500); 
             }
             if (data.type === "updateActionHistory") {
