@@ -53,7 +53,7 @@ function displayHand(hand) {
 let players = [];
 let tableCards = [];
 let pot = 0;
-et currentPlayerIndex = 0;
+let currentPlayerIndex = 0;
 let currentBet = 0;
 let round = 0;
 let smallBlindAmount = 10;
