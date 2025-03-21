@@ -383,12 +383,6 @@ document.addEventListener("DOMContentLoaded", function () {
     //  ✅  tableId parameter added
     function sendAction(action, amount = null) {
     if (socket.readyState !== WebSocket.OPEN) return;
-
-    // ✅ Ensure currentPlayerIndex is valid
-    if (!players[currentPlayerIndex]) {
-        console.error("❌ Invalid currentPlayerIndex:", currentPlayerIndex);
-        return;
-    }
         
 const gameState = gameStates.get(tableId);
 if (!gameState || !gameState.players[gameState.currentPlayerIndex]) {
