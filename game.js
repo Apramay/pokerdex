@@ -75,18 +75,16 @@ let currentTableId = null;
 function updateUI(tableId) {
     //  ✅  Use table-specific state if available
     const gameState = gameStates.get(tableId);
-if (!gameState || !gameState.players) {
+    if (!gameState) {
         console.warn(" ⚠️  No game state found for table:", tableId);
         return;
     }
 
     const { players, tableCards, pot, round, currentBet, currentPlayerIndex, dealerIndex } = gameState;
 
-
-
     if (!playersContainer) return;
     playersContainer.innerHTML = "";
-    gameState.players.forEach((player, index) => {
+    players.forEach((player, index) => {
         const playerDiv = document.createElement("div");
         playerDiv.classList.add("player");
         let dealerIndicator = index === dealerIndex ? "D " : "";
@@ -96,8 +94,8 @@ if (!gameState || !gameState.players) {
         if (index === (dealerIndex + 1) % players.length) blindIndicator = "SB ";
 
         if (index === (dealerIndex + 2) % players.length) blindIndicator = "BB ";
-            let displayedHand = player.name === gameState.players[gameState.currentPlayerIndex].name
-        ? displayHand(player.hand)
+
+        const displayedHand = player.name === players[currentPlayerIndex].name ? displayHand(player.hand)
             : `<div class="card"><img src="https://apramay.github.io/pokerdex/cards/back.jpg" 
     alt="Card Back" style="width: 100px; height: auto;"></div>`;
         playerDiv.innerHTML = `
@@ -154,7 +152,6 @@ document.addEventListener("DOMContentLoaded", function () {
             //  ✅  Get tableId from URL
             const urlParams = new URLSearchParams(window.location.search);
             const tableId = urlParams.get('table');
-            console.log("✅ Extracted tableId:", tableId);
             if (playerName) {
                 //  ✅  Send tableId on join
                 socket.send(JSON.stringify({ type: "join", name: playerName, tableId: tableId }));
@@ -262,17 +259,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 //     console.warn(` ⚠️  Player ${data.playerName} not found in players list`);
                 // }
                 // ✅ Update the currentPlayerIndex within the table's state
-    
-                    const gameState = gameStates.get(tableId);
-    if (!gameState || !gameState.players) {
-        console.warn("⚠️ No game state found for table:", tableId);
-        return;
+                if (!gameStates.has(tableId)) {
+                    console.warn(" ⚠️  No game state found for table:", tableId);
+                    return;
                 }
+                const gameState = gameStates.get(tableId);
                 let playerIndex = gameState.players.findIndex(p => p.name === data.playerName);
-    if (playerIndex !== -1) {
-        gameState.currentPlayerIndex = playerIndex;
-        updateUI(tableId);  // ✅ Ensure UI updates properly
-    }else {
+                if (playerIndex !== -1) {
+                    gameState.currentPlayerIndex = playerIndex;
+                    console.log(` ✅  Updated currentPlayerIndex: ${gameState.currentPlayerIndex}`);
+                    updateUI(tableId);
+                } else {
                     console.warn(` ⚠️  Player ${data.playerName} not found in players list`);
                 }
             }
@@ -284,6 +281,14 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("❌ No valid tableId found in updateGameState!");
         return;
     }
+                // players = data.players;
+                // tableCards = data.tableCards;
+                // pot = data.pot;
+                // currentBet = data.currentBet;
+                // round = data.round;
+                // currentPlayerIndex = data.currentPlayerIndex;
+                // dealerIndex = data.dealerIndex;
+                // ✅ Initialize table state if it doesn't exist
                 if (!gameStates.has(tableId)) {
                     gameStates.set(tableId, {
                         players:[],
@@ -304,8 +309,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 gameState.currentPlayerIndex = data.currentPlayerIndex;
                 gameState.dealerIndex = data.dealerIndex;
                 currentTableId = tableId;
-                    console.log(`✅ Game state updated for table: ${tableId}`);
-
                 setTimeout(() => {
                     updateUI(tableId);
                 }, 500);
@@ -385,41 +388,32 @@ document.addEventListener("DOMContentLoaded", function () {
     function sendAction(action, amount = null) {
     if (socket.readyState !== WebSocket.OPEN) return;
 
-    console.log("ℹ️ Checking tableId before sending action:", tableId);
-    const gameState = gameStates.get(tableId);
-
-    if (!gameState) {
-        console.error(`❌ No game state found for table: ${tableId}`);
-        console.log("🔍 Current gameStates:", gameStates);  // Debugging
+    // ✅ Ensure currentPlayerIndex is valid
+    if (!players[currentPlayerIndex]) {
+        console.error("❌ Invalid currentPlayerIndex:", currentPlayerIndex);
         return;
     }
-
-    if (!gameState.players) {
-        console.error(`❌ Players array is missing for table: ${tableId}`);
-        return;
-    }
-
-    const currentPlayer = gameState.players[gameState.currentPlayerIndex];
-    if (!currentPlayer) {
-        console.error(`❌ Invalid currentPlayerIndex (${gameState.currentPlayerIndex}) for table: ${tableId}`);
-        return;
-    }
-
-    const actionData = {
-        type: action,
-        playerName: currentPlayer.name,
-    };
-
-    if (amount !== null) {
-        actionData.amount = amount;
-    }
-
-    console.log("📤 Sending action data:", actionData);
-    socket.send(JSON.stringify(actionData));
-
-    setTimeout(() => {
-        socket.send(JSON.stringify({ type: "getGameState", tableId }));
-    }, 500);
+        const gameState = gameStates.get(tableId);
+        if (!gameState || !gameState.players[gameState.currentPlayerIndex]) {
+console.error(" ❌  Invalid currentPlayerIndex:", currentPlayerIndex);
+return;
+}
+const actionData = {
+type: action,
+playerName: gameState.players[gameState.currentPlayerIndex].name, //  ✅  Always use the correct player
+};
+if (amount !== null) {
+actionData.amount = amount;
+}
+socket.send(JSON.stringify(actionData));
+       let actionText = `${gameState.players[gameState.currentPlayerIndex].name} ${action}`;
+if (amount !== null) {
+    actionText += ` ${amount}`;
 }
 
+    //  ✅  Ensure UI reflects the new state after action
+    setTimeout(() => {
+        socket.send(JSON.stringify({ type: "getGameState" }));
+    }, 500);
+}
 });
