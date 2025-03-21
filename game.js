@@ -385,10 +385,11 @@ document.addEventListener("DOMContentLoaded", function () {
     if (socket.readyState !== WebSocket.OPEN) return;
         
 const gameState = gameStates.get(tableId);
-if (!gameState || !gameState.players[gameState.currentPlayerIndex]) {
-    console.error("❌ Invalid currentPlayerIndex or players array is missing for table:", tableId);
+if (!gameState || !gameState.players) {
+    console.error("❌ Game state or players array is undefined for table:", tableId);
     return;
 }
+gameState.players[gameState.currentPlayerIndex]
 
 const actionData = {
     type: action,
