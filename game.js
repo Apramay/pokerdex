@@ -154,6 +154,7 @@ document.addEventListener("DOMContentLoaded", function () {
             //  ✅  Get tableId from URL
             const urlParams = new URLSearchParams(window.location.search);
             const tableId = urlParams.get('table');
+            console.log("✅ Extracted tableId:", tableId);
             if (playerName) {
                 //  ✅  Send tableId on join
                 socket.send(JSON.stringify({ type: "join", name: playerName, tableId: tableId }));
@@ -305,6 +306,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 gameState.currentPlayerIndex = data.currentPlayerIndex;
                 gameState.dealerIndex = data.dealerIndex;
                 currentTableId = tableId;
+                    console.log(`✅ Game state updated for table: ${tableId}`);
+
                 setTimeout(() => {
                     updateUI(tableId);
                 }, 500);
