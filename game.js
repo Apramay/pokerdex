@@ -93,18 +93,18 @@ if (!gameState || !gameState.players) {
         playerDiv.innerHTML = `
          
     ${dealerIndicator}${blindIndicator}${currentPlayerIndicator}${player.name}: Tokens: ${player.tokens}<br>
-            Hand: ${displayHand(gameState.player.hand)}
+            Hand: ${displayHand(player.hand)}
         `;
         playersContainer.appendChild(playerDiv);
     });
 
-    if (tableCardsContainer) tableCardsContainer.innerHTML = displayHand(gameState.tableCards);
+    if (tableCardsContainer) tableCardsContainer.innerHTML = displayHand(tableCards);
     if (potDisplay) {
         console.log(" 💰  Updating UI pot display:", pot);
-        potDisplay.textContent = `Pot: ${gameState.pot}`;
+        potDisplay.textContent = `Pot: ${pot}`;
     }
     if (roundDisplay) roundDisplay.textContent = `Round: ${round}`;
-    if (currentBetDisplay) currentBetDisplay.textContent = `Current Bet: ${gameState.currentBet}`;
+    if (currentBetDisplay) currentBetDisplay.textContent = `Current Bet: ${currentBet}`;
     if (messageDisplay) {
         console.log(` 📢  Updating UI: It's ${players[currentPlayerIndex]?.name}'s turn.`);
         messageDisplay.textContent = `It's ${players[currentPlayerIndex]?.name}'s turn.`;
@@ -186,7 +186,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         dealerIndex: 0
                     });
                 }
-                                const gameState = gameStates.get(tableId);
+                const gameState = gameStates.get(tableId);
                 gameState.players = data.players;
                 updateUI(tableId);
             }
@@ -376,6 +376,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (socket.readyState !== WebSocket.OPEN) return;
 
     console.log("ℹ️ Checking tableId before sending action:", tableId);
+    const gameState = gameStates.get(tableId);
 
     if (!gameState) {
         console.error(`❌ No game state found for table: ${tableId}`);
