@@ -98,8 +98,6 @@ if (!gameState || !gameState.players) {
         if (index === (dealerIndex + 2) % players.length) blindIndicator = "BB ";
             let displayedHand = player.name === gameState.players[gameState.currentPlayerIndex].name
         ? displayHand(player.hand)
-        : "Hidden Cards";
-
             : `<div class="card"><img src="https://apramay.github.io/pokerdex/cards/back.jpg" 
     alt="Card Back" style="width: 100px; height: auto;"></div>`;
         playerDiv.innerHTML = `
