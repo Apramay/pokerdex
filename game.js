@@ -186,6 +186,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         dealerIndex: 0
                     });
                 }
+                                const gameState = gameStates.get(tableId);
                 gameState.players = data.players;
                 updateUI(tableId);
             }
