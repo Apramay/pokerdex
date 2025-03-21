@@ -39,26 +39,16 @@ function displayCard(card) {
     }
     const rank = card.rank;
     const suit = card.suit.toLowerCase();
-    const imageName = `<span class="math-inline">\{rank\}\_of\_</span>{suit}.png`;
-    return `<img src="https://apramay.github.io/pokerdex/cards/<span class="math-inline">\{imageName\}" 
-alt\="</span>{rank} of ${suit}" 
+    const imageName = `${rank}_of_${suit}.png`;
+
+    return `<img src="https://apramay.github.io/pokerdex/cards/${imageName}" 
+            alt="${rank} of ${suit}" 
             onerror="this.onerror=null; this.src='./cards/default.png';">`;
 }
 
 function displayHand(hand) {
     return hand.map(card => `<div class="card">${displayCard(card)}</div>`).join("");
 }
-
-// UI elements and game state
-let players = [];
-let tableCards = [];
-let pot = 0;
-let currentPlayerIndex = 0;
-let currentBet = 0;
-let round = 0;
-let smallBlindAmount = 10;
-let bigBlindAmount = 20;
-let dealerIndex = 0
 
 // UI elements
 const playersContainer = document.getElementById("players");
@@ -89,20 +79,20 @@ if (!gameState || !gameState.players) {
     gameState.players.forEach((player, index) => {
         const playerDiv = document.createElement("div");
         playerDiv.classList.add("player");
-        let dealerIndicator = index === dealerIndex ? "D " : "";
-        let currentPlayerIndicator = index === currentPlayerIndex ? " ➡️  " : "";
+        let dealerIndicator = gameState.index === gameState.dealerIndex ? "D " : "";
+        let currentPlayerIndicator = gameState.index === gameState.currentPlayerIndex ? " ➡️  " : "";
         let blindIndicator = "";
 
-        if (index === (dealerIndex + 1) % players.length) blindIndicator = "SB ";
+        if (index === (gameState.dealerIndex + 1) % gameState.players.length) blindIndicator = "SB ";
 
-        if (index === (dealerIndex + 2) % players.length) blindIndicator = "BB ";
+        if (index === (gameState.dealerIndex + 2) % gameState.players.length) blindIndicator = "BB ";
             let displayedHand = player.name === gameState.players[gameState.currentPlayerIndex].name
         ? displayHand(player.hand)
             : `<div class="card"><img src="https://apramay.github.io/pokerdex/cards/back.jpg" 
     alt="Card Back" style="width: 100px; height: auto;"></div>`;
         playerDiv.innerHTML = `
          
-    <span class="math-inline">\{dealerIndicator\}</span>{blindIndicator}<span class="math-inline">\{currentPlayerIndicator\}</span>{player.name}: Tokens: ${player.tokens}<br>
+    ${dealerIndicator}${blindIndicator}${currentPlayerIndicator}${player.name}: Tokens: ${player.tokens}<br>
             Hand: ${displayHand(player.hand)}
         `;
         playersContainer.appendChild(playerDiv);
