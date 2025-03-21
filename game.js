@@ -267,7 +267,6 @@ document.addEventListener("DOMContentLoaded", function () {
         console.warn("⚠️ No game state found for table:", tableId);
         return;
                 }
-                const gameState = gameStates.get(tableId);
                 let playerIndex = gameState.players.findIndex(p => p.name === data.playerName);
     if (playerIndex !== -1) {
         gameState.currentPlayerIndex = playerIndex;
@@ -390,11 +389,7 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("❌ Invalid currentPlayerIndex:", currentPlayerIndex);
         return;
     }
-        const gameState = gameStates.get(tableId);
-        if (!gameState || !gameState.players[gameState.currentPlayerIndex]) {
-console.error(" ❌  Invalid currentPlayerIndex:", currentPlayerIndex);
-return;
-}
+        
 const gameState = gameStates.get(tableId);
 if (!gameState || !gameState.players[gameState.currentPlayerIndex]) {
     console.error("❌ Invalid currentPlayerIndex or players array is missing for table:", tableId);
