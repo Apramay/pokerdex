@@ -278,14 +278,12 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             if (data.type === "updateGameState") {
                 console.log(" 🔄  Updating game state:", data);
-                // players = data.players;
-                // tableCards = data.tableCards;
-                // pot = data.pot;
-                // currentBet = data.currentBet;
-                // round = data.round;
-                // currentPlayerIndex = data.currentPlayerIndex;
-                // dealerIndex = data.dealerIndex;
-                // ✅ Initialize table state if it doesn't exist
+                let tableId = data.tableId || new URLSearchParams(window.location.search).get("table");
+
+    if (!tableId) {
+        console.error("❌ No valid tableId found in updateGameState!");
+        return;
+    }
                 if (!gameStates.has(tableId)) {
                     gameStates.set(tableId, {
                         players:[],
