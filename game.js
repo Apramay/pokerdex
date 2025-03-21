@@ -81,10 +81,15 @@ function updateUI(tableId) {
     }
 
     const { players, tableCards, pot, round, currentBet, currentPlayerIndex, dealerIndex } = gameState;
+    const gameState = gameStates.get(tableId);
+if (!gameState || !gameState.players) {
+    console.warn("⚠️ No game state found for table:", tableId);
+    return;
+}
 
     if (!playersContainer) return;
     playersContainer.innerHTML = "";
-    players.forEach((player, index) => {
+    gameState.players.forEach((player, index) => {
         const playerDiv = document.createElement("div");
         playerDiv.classList.add("player");
         let dealerIndicator = index === dealerIndex ? "D " : "";
@@ -94,8 +99,10 @@ function updateUI(tableId) {
         if (index === (dealerIndex + 1) % players.length) blindIndicator = "SB ";
 
         if (index === (dealerIndex + 2) % players.length) blindIndicator = "BB ";
+            let displayedHand = player.name === gameState.players[gameState.currentPlayerIndex].name
+        ? displayHand(player.hand)
+        : "Hidden Cards";
 
-        const displayedHand = player.name === players[currentPlayerIndex].name ? displayHand(player.hand)
             : `<div class="card"><img src="https://apramay.github.io/pokerdex/cards/back.jpg" 
     alt="Card Back" style="width: 100px; height: auto;"></div>`;
         playerDiv.innerHTML = `
@@ -259,17 +266,18 @@ document.addEventListener("DOMContentLoaded", function () {
                 //     console.warn(` ⚠️  Player ${data.playerName} not found in players list`);
                 // }
                 // ✅ Update the currentPlayerIndex within the table's state
-                if (!gameStates.has(tableId)) {
-                    console.warn(" ⚠️  No game state found for table:", tableId);
-                    return;
+    
+                    const gameState = gameStates.get(tableId);
+    if (!gameState || !gameState.players) {
+        console.warn("⚠️ No game state found for table:", tableId);
+        return;
                 }
                 const gameState = gameStates.get(tableId);
                 let playerIndex = gameState.players.findIndex(p => p.name === data.playerName);
-                if (playerIndex !== -1) {
-                    gameState.currentPlayerIndex = playerIndex;
-                    console.log(` ✅  Updated currentPlayerIndex: ${gameState.currentPlayerIndex}`);
-                    updateUI(tableId);
-                } else {
+    if (playerIndex !== -1) {
+        gameState.currentPlayerIndex = playerIndex;
+        updateUI(tableId);  // ✅ Ensure UI updates properly
+    }else {
                     console.warn(` ⚠️  Player ${data.playerName} not found in players list`);
                 }
             }
@@ -392,10 +400,17 @@ document.addEventListener("DOMContentLoaded", function () {
 console.error(" ❌  Invalid currentPlayerIndex:", currentPlayerIndex);
 return;
 }
+const gameState = gameStates.get(tableId);
+if (!gameState || !gameState.players[gameState.currentPlayerIndex]) {
+    console.error("❌ Invalid currentPlayerIndex or players array is missing for table:", tableId);
+    return;
+}
+
 const actionData = {
-type: action,
-playerName: gameState.players[gameState.currentPlayerIndex].name, //  ✅  Always use the correct player
+    type: action,
+    playerName: gameState.players[gameState.currentPlayerIndex].name,  // ✅ Correct reference
 };
+
 if (amount !== null) {
 actionData.amount = amount;
 }
