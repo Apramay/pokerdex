@@ -383,31 +383,42 @@ document.addEventListener("DOMContentLoaded", function () {
     //  ✅  tableId parameter added
     function sendAction(action, amount = null) {
     if (socket.readyState !== WebSocket.OPEN) return;
-        
-const gameState = gameStates.get(tableId);
-if (!gameState || !gameState.players) {
-    console.error("❌ Game state or players array is undefined for table:", tableId);
-    return;
-}
-gameState.players[gameState.currentPlayerIndex]
 
-const actionData = {
-    type: action,
-    playerName: gameState.players[gameState.currentPlayerIndex].name,  // ✅ Correct reference
-};
+    console.log("ℹ️ Checking tableId before sending action:", tableId);
+    const gameState = gameStates.get(tableId);
 
-if (amount !== null) {
-actionData.amount = amount;
-}
-socket.send(JSON.stringify(actionData));
-       let actionText = `${gameState.players[gameState.currentPlayerIndex].name} ${action}`;
-if (amount !== null) {
-    actionText += ` ${amount}`;
-}
+    if (!gameState) {
+        console.error(`❌ No game state found for table: ${tableId}`);
+        console.log("🔍 Current gameStates:", gameStates);  // Debugging
+        return;
+    }
 
-    //  ✅  Ensure UI reflects the new state after action
+    if (!gameState.players) {
+        console.error(`❌ Players array is missing for table: ${tableId}`);
+        return;
+    }
+
+    const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+    if (!currentPlayer) {
+        console.error(`❌ Invalid currentPlayerIndex (${gameState.currentPlayerIndex}) for table: ${tableId}`);
+        return;
+    }
+
+    const actionData = {
+        type: action,
+        playerName: currentPlayer.name,
+    };
+
+    if (amount !== null) {
+        actionData.amount = amount;
+    }
+
+    console.log("📤 Sending action data:", actionData);
+    socket.send(JSON.stringify(actionData));
+
     setTimeout(() => {
-        socket.send(JSON.stringify({ type: "getGameState" }));
+        socket.send(JSON.stringify({ type: "getGameState", tableId }));
     }, 500);
 }
+
 });
