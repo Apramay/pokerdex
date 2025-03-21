@@ -195,9 +195,11 @@ console.log("✅ Connected to table:", currentTableId);
                 dealerIndex: 0
             });
             }
+        const gameState = gameStates.get(tableId);
+
             if (data.type === "updatePlayers") {
                 console.log("🔄 Updating players list:", data.players);
-                gameStates.get(tableId).players = data.players;
+            gameState.players = data.players;
                 updateUI(tableId, data.players);
             }
             
@@ -363,7 +365,6 @@ function sendShowHideDecision(choice) {
     if (socket.readyState !== WebSocket.OPEN) return;
 
     // ✅ Ensure currentPlayerIndex is valid
-    const gameState = gameStates.get(currentTableId);
     if (!gameState) {
         console.error(`❌ No game state found for table: ${currentTableId}`);
         return;
