@@ -174,8 +174,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log(" 🔄  Updating players list:", data.players);
                 // updateUI(data.players);
                 // ✅ Initialize table state if it doesn't exist
-                if (!gameStates.has(tableId)) {
-                    gameStates.set(tableId, {
+                if (!gameState.has(tableId)) {
+                    gameState.set(tableId, {
                         players: [],
                         tableCards: [],
                         pot: 0,
@@ -185,7 +185,6 @@ document.addEventListener("DOMContentLoaded", function () {
                         dealerIndex: 0
                     });
                 }
-                const gameState = gameStates.get(tableId);
                 gameState.players = data.players;
                 updateUI(tableId);
             }
