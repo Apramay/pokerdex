@@ -267,36 +267,10 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             if (data.type === "updateGameState") {
                 console.log(" 🔄  Updating game state:", data);
-                let tableId = data.tableId || new URLSearchParams(window.location.search).get("table");
-
-    if (!tableId) {
-        console.error("❌ No valid tableId found in updateGameState!");
-        return;
-    }
-                if (!gameStates.has(tableId)) {
-                    gameStates.set(tableId, {
-                        players:[],
-                        tableCards:[],
-                        pot: 0,
-                        round: 0,
-                        currentBet: 0,
-                        currentPlayerIndex: 0,
-                        dealerIndex: 0
-                    });
-                }
-                const gameState = gameStates.get(tableId);
-                gameState.players = data.players;
-                gameState.tableCards = data.tableCards;
-                gameState.pot = data.pot;
-                gameState.currentBet = data.currentBet;
-                gameState.round = data.round;
-                gameState.currentPlayerIndex = data.currentPlayerIndex;
-                gameState.dealerIndex = data.dealerIndex;
-                currentTableId = tableId;
-                    console.log(`✅ Game state updated for table: ${tableId}`);
+               
 
                 setTimeout(() => {
-                    updateUI(tableId);
+                    updateUI(data);
                 }, 500);
             }
             if (data.type === "updateActionHistory") {
