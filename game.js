@@ -398,6 +398,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const actionData = {
         type: action,
         playerName: currentPlayer.name,
+          tableId: currentTableId,  // <-- Send the tableId
+
     };
 
     if (amount !== null) {
