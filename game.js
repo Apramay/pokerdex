@@ -79,8 +79,8 @@ if (!gameState || !gameState.players) {
     gameState.players.forEach((player, index) => {
         const playerDiv = document.createElement("div");
         playerDiv.classList.add("player");
-        let dealerIndicator = gameState.index === gameState.dealerIndex ? "D " : "";
-        let currentPlayerIndicator = gameState.index === gameState.currentPlayerIndex ? " ➡️  " : "";
+        let dealerIndicator = index === gameState.dealerIndex ? "D " : "";
+        let currentPlayerIndicator = index === gameState.currentPlayerIndex ? " ➡️  " : "";
         let blindIndicator = "";
 
         if (index === (gameState.dealerIndex + 1) % gameState.players.length) blindIndicator = "SB ";
