@@ -381,28 +381,35 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     //  ✅  tableId parameter added
-    function sendAction(action, amount = null) {
+    function sendAction(action, amount = null, tableId) {
     if (socket.readyState !== WebSocket.OPEN) return;
     console.log(" ℹ️  Checking tableId before sending action:", tableId);
-    if (!players[currentPlayerIndex]) {
-        console.error("❌ Invalid currentPlayerIndex:", currentPlayerIndex);
+    const gameState = gameStates.get(tableId);
+    if (!gameState) {
+        console.error(` ❌  No game state found for table: ${tableId}`);
+        console.log(" 🔍  Current gameStates:", gameStates);
         return;
     }
-
+    if (!gameState.players) {
+        console.error(` ❌  Players array is missing for table: ${tableId}`);
+        return;
+    }
+    // ✅ Access currentPlayerIndex from gameState
+    const currentPlayer = gameState.players[gameState.currentPlayerIndex];
+    if (!currentPlayer) {
+        console.error(` ❌  Invalid currentPlayerIndex (${gameState.currentPlayerIndex}) for table: ${tableId}`);
+        return;
+    }
     const actionData = {
         type: action,
-        playerName: players[currentPlayerIndex].name, // ✅ Always use the correct player
+        playerName: currentPlayer.name,
     };
-
     if (amount !== null) {
         actionData.amount = amount;
     }
-
+    console.log(" 📤  Sending action data:", actionData);
     socket.send(JSON.stringify(actionData));
-       let actionText = `${players[currentPlayerIndex].name} ${action}`;
-    if (amount !== null) {
-        actionText += ` ${amount}`;
-    }
+
        
     // ✅ Ensure UI reflects the new state after action
     setTimeout(() => {
