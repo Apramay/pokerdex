@@ -286,6 +286,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     });
                 }
                 const gameState = gameStates.get(tableId);
+                if (gameState.round !== data.round) {
+        console.log(`🆕 Round changed: ${gameState.round} → ${data.round}`);
+        gameState.round = data.round;
+    } else {
+        console.log("🔁 No round change detected, skipping update.");
+    }
                 gameState.players = data.players;
                 gameState.tableCards = data.tableCards;
                 gameState.pot = data.pot;
