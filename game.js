@@ -59,7 +59,7 @@ const currentBetDisplay = document.getElementById("currentBet");
 const messageDisplay = document.getElementById("message");
 
 //  ✅  Table-specific game states - REMOVED
-// const gameStates = new Map();
+const gameStates = new Map();
 let currentTableId = null;
 
 function updateUI(tableId) {
