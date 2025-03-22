@@ -296,9 +296,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 currentTableId = tableId;
                     console.log(`✅ Game state updated for table: ${tableId}`);
 
-                setTimeout(() => {
+                
                     updateUI(tableId);
-                }, 500);
+        
             }
             if (data.type === "updateActionHistory") {
                 updateActionHistory(data.action);
