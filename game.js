@@ -3,7 +3,7 @@ const ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"]
 const rankValues = { "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9, "10": 10, "J": 11, "Q": 12, "K": 13, "A": 14 };
 
 function createDeck() {
-    const deck =[];
+    const deck = [];
     for (const suit of suits) {
         for (const rank of ranks) {
             deck.push({ suit, rank });
@@ -58,13 +58,13 @@ const roundDisplay = document.getElementById("round");
 const currentBetDisplay = document.getElementById("currentBet");
 const messageDisplay = document.getElementById("message");
 
-//  ✅  Table-specific game states - REMOVED
+//  ✅  Table-specific game states
 const gameStates = new Map();
 let currentTableId = null;
 
 function updateUI(tableId) {
+    //  ✅  Use table-specific state if available
     const gameState = gameStates.get(tableId);
-
     if (!gameState || !gameState.players || !Array.isArray(gameState.players)) {
         console.warn("⚠️ No valid game state found for table:", tableId);
         return;
@@ -78,7 +78,7 @@ function updateUI(tableId) {
     gameState.players.forEach((player, index) => {
         if (!player || !player.name) {
             console.warn("⚠️ Invalid player data:", player);
-            return; 
+            return;
         }
 
         const playerDiv = document.createElement("div");
@@ -96,7 +96,7 @@ function updateUI(tableId) {
     alt="Card Back" style="width: 100px; height: auto;"></div>`;
         playerDiv.innerHTML = `
          
-    ${dealerIndicator}${blindIndicator}${currentPlayerIndicator}${player.name}: Tokens: ${player.tokens}<br>
+    <span class="math-inline">\{dealerIndicator\}</span>{blindIndicator}<span class="math-inline">\{currentPlayerIndicator\}</span>{player.name}: Tokens: ${player.tokens}<br>
             Hand: ${displayedHand}
         `;
         playersContainer.appendChild(playerDiv);
@@ -120,8 +120,7 @@ function updateUI(tableId) {
     });
 }
 
-
-let actionHistory =[] ;
+let actionHistory = [];
 function updateActionHistory(actionText) {
     const historyContainer = document.getElementById("action-history");
     if (historyContainer) {
@@ -138,7 +137,7 @@ function updateActionHistory(actionText) {
 document.addEventListener("DOMContentLoaded", function () {
     const socket = new WebSocket("wss://pokerdex-server.onrender.com"); // Replace with your server address
     socket.onopen = () => {
-        console.log(" ✅  Connected to WebSocket server");
+        console.log("  ✅   Connected to WebSocket server");
     };
     const addPlayerBtn = document.getElementById("add-player-btn");
     const playerNameInput = document.getElementById("player-name-input");
@@ -148,18 +147,18 @@ document.addEventListener("DOMContentLoaded", function () {
             //  ✅  Get tableId from URL
             const urlParams = new URLSearchParams(window.location.search);
             const tableId = urlParams.get('table');
-            console.log("✅ Extracted tableId:", tableId);
+            console.log(" ✅  Extracted tableId:", tableId);
             if (playerName) {
                 //  ✅  Send tableId on join
                 socket.send(JSON.stringify({ type: "join", name: playerName, tableId: tableId }));
                 sessionStorage.setItem("playerName", playerName);
                 playerNameInput.value = "";
             } else {
-                console.warn(" ⚠️  No player name entered!");
+                console.warn("  ⚠️   No player name entered!");
             }
         };
     } else {
-        console.error(" ❌  Player input elements not found!");
+        console.error("  ❌   Player input elements not found!");
     }
     const messageDisplay = document.getElementById("message");
     function displayMessage(message) {
@@ -170,56 +169,55 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
     socket.onmessage = function (event) {
-        console.log(" 📩  Received message from WebSocket:", event.data);
+        console.log("  📩   Received message from WebSocket:", event.data);
         try {
             let data = JSON.parse(event.data);
             //  ✅  Get tableId from message (if available)
             const tableId = data.tableId;
             if (data.type === "updatePlayers") {
-                console.log(" 🔄  Updating players list:", data.players);
+                console.log("  🔄   Updating players list:", data.players);
                 // updateUI(data.players);
-                // ✅ Initialize table state if it doesn't exist - REMOVED
-                // if (!gameStates.has(tableId)) {
-                //     gameStates.set(tableId, {
-                //         players:,
-                //         tableCards:,
-                //         pot: 0,
-                //         round: 0,
-                //         currentBet: 0,
-                //         currentPlayerIndex: 0,
-                //         dealerIndex: 0
-                //     });
-                // }
-                // const gameState = gameStates.get(tableId);
-                // gameState.players = data.players;
+                //  ✅  Initialize table state if it doesn't exist
+                if (!gameStates.has(tableId)) {
+                    gameStates.set(tableId, {
+                        players:[],
+                        tableCards:[],
+                        pot: 0,
+                        round: 0,
+                        currentBet: 0,
+                        currentPlayerIndex: 0,
+                        dealerIndex: 0
+                    });
+                }
+                const gameState = gameStates.get(tableId);
+                gameState.players = data.players;
                 updateUI(tableId);
-                updateUI(data); // Modified line
             }
 
             if (data.type === "startGame") {
-                console.log(" 🎲  Game has started!");
+                console.log("  🎲   Game has started!");
             }
             if (data.type === "showdown") {
-                console.log(" 🏆  Showdown results received!");
+                console.log("  🏆   Showdown results received!");
                 data.winners.forEach(winner => {
-                    console.log(` 🎉  ${winner.playerName} won with: ${displayHand(winner.hand)}`);
+                    console.log(`  🎉   ${winner.playerName} won with: ${displayHand(winner.hand)}`);
                 });
                 // updateUI();
-                updateUI(data); //  ✅  Ensure UI reflects the winning hands - Modified line
+                updateUI(tableId); //   ✅   Ensure UI reflects the winning hands
             }
             if (data.type === "showOrHideCards") {
-                console.log(" 👀  Show/Hide option available");
+                console.log("  👀   Show/Hide option available");
                 const playerName = sessionStorage.getItem("playerName");
                 if (data.remainingPlayers.includes(playerName)) {
                     showShowHideButtons();
                 } else {
-                    console.log(" ✅  You are not required to show or hide cards.");
+                    console.log("  ✅   You are not required to show or hide cards.");
                 }
             }
 
             if (data.type === "bigBlindAction") {
                 if (!data.options) {
-                    console.warn(" ⚠️  No options received from server!");
+                    console.warn("  ⚠️   No options received from server!");
                     return;
                 }
 
@@ -248,7 +246,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 };
             }
             if (data.type === "playerTurn") {
-                console.log(` 🎯  Player turn received: ${data.playerName}`);
+                console.log(`  🎯   Player turn received: ${data.playerName}`);
                 // let playerIndex = players.findIndex(p => p.name === data.playerName);
                 // if (playerIndex !== -1) {
                 //     currentPlayerIndex = playerIndex;
@@ -257,61 +255,60 @@ document.addEventListener("DOMContentLoaded", function () {
                 // } else {
                 //     console.warn(` ⚠️  Player ${data.playerName} not found in players list`);
                 // }
-                // ✅ Update the currentPlayerIndex within the table's state
+                //  ✅  Update the currentPlayerIndex within the table's state
     
-                    // const gameState = gameStates.get(tableId);
-    // if (!gameState || !gameState.players) {
-    //     console.warn("⚠️ No game state found for table:", tableId);
-    //     return;
-    //             }
-                // let playerIndex = gameState.players.findIndex(p => p.name === data.playerName);
-    // if (playerIndex !== -1) {
-    //     gameState.currentPlayerIndex = playerIndex;
-    //     updateUI(tableId);  // ✅ Ensure UI updates properly
-    // }else {
-    //                 console.warn(` ⚠️  Player ${data.playerName} not found in players list`);
-    //             }
-                updateUI(data)
+                    const gameState = gameStates.get(tableId);
+    if (!gameState || !gameState.players) {
+        console.warn(" ⚠️  No game state found for table:", tableId);
+        return;
+                }
+                let playerIndex = gameState.players.findIndex(p => p.name === data.playerName);
+    if (playerIndex !== -1) {
+        gameState.currentPlayerIndex = playerIndex;
+        updateUI(tableId);
+    }else {
+                    console.warn(`  ⚠️   Player ${data.playerName} not found in players list`);
+                }
             }
             if (data.type === "updateGameState") {
-                console.log(" 🔄  Updating game state:", data);
-                // let tableId = data.tableId || new URLSearchParams(window.location.search).get("table");
-
-    // if (!tableId) {
-    //     console.error("❌ No valid tableId found in updateGameState!");
-    //     return;
-    // }
-                // if (!gameStates.has(tableId)) {
-                //     gameStates.set(tableId, {
-                //         players:,
-                //         tableCards:,
-                //         pot: 0,
-                //         round: 0,
-                //         currentBet: 0,
-                //         currentPlayerIndex: 0,
-                //         dealerIndex: 0
-                //     });
-                // }
-                // const gameState = gameStates.get(tableId);
-                // gameState.players = data.players;
-                // gameState.tableCards = data.tableCards;
-                // gameState.pot = data.pot;
-                // gameState.currentBet = data.currentBet;
-                // gameState.round = data.round;
-                // gameState.currentPlayerIndex = data.currentPlayerIndex;
-                // gameState.dealerIndex = data.dealerIndex;
+                console.log("  🔄   Updating game state:", data);
+                let tableId = data.tableId || new URLSearchParams(window.location.search).get("table");
+    if (!tableId) {
+        console.error(" ❌  No valid tableId found in updateGameState!");
+        return;
+    }
+                if (!gameStates.has(tableId)) {
+                    gameStates.set(tableId, {
+                        players:[],
+                        tableCards: [],
+            
+                    pot: 0,
+                        round: 0,
+                        currentBet: 0,
+                        currentPlayerIndex: 0,
+            
+                    dealerIndex: 0
+                    });
+                }
+                const gameState = gameStates.get(tableId);
+                gameState.players = data.players;
+                gameState.tableCards = data.tableCards;
+                gameState.pot = data.pot;
+                gameState.currentBet = data.currentBet;
+                gameState.round = data.round;
+                gameState.currentPlayerIndex = data.currentPlayerIndex;
+                gameState.dealerIndex = data.dealerIndex;
                 currentTableId = tableId;
-                    console.log(`✅ Game state updated for table: ${tableId}`);
-
+                    console.log(` ✅  Game state updated for table: ${tableId}`);
                 setTimeout(() => {
-                    updateUI(data); // Modified line
+                    updateUI(tableId);
                 }, 500);
             }
             if (data.type === "updateActionHistory") {
                 updateActionHistory(data.action);
             }
         } catch (error) {
-            console.error(" ❌  Error parsing message:", error);
+            console.error("  ❌   Error parsing message:", error);
         }
     };
 
@@ -320,22 +317,23 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("  ❌   WebSocket is not connected!");
             return;
         }
-        //  ✅  Get tableId from URL
+        //   ✅   Get tableId from URL
         const urlParams = new URLSearchParams(window.location.search);
         const tableId = urlParams.get('table');
         socket.send(JSON.stringify({
             type: "showHideDecision",
             playerName: sessionStorage.getItem("playerName"),
             choice: choice,
-            tableId: tableId
+            tableId: tableId  //   ✅   Send tableId
         }));
-        //  ✅  Hide buttons after choosing
+        //   ✅   Hide buttons after choosing
         document.getElementById("show-hide-buttons").style.display = "none";
     }
+
     function showShowHideButtons() {
         const buttonsContainer = document.getElementById("show-hide-buttons");
         buttonsContainer.style.display = "block";
-        //  ✅  Make buttons visible
+        //   ✅   Make buttons visible
         document.getElementById("show-cards-btn").onclick = function () {
             sendShowHideDecision("show");
         };
@@ -343,11 +341,12 @@ document.addEventListener("DOMContentLoaded", function () {
             sendShowHideDecision("hide");
         };
     }
+
     const startGameBtn = document.getElementById("start-game-btn");
     if (startGameBtn) {
         startGameBtn.onclick = function () {
             if (socket.readyState === WebSocket.OPEN) {
-                //  ✅  Get tableId from URL
+                //   ✅   Get tableId from URL
                 const urlParams = new URLSearchParams(window.location.search);
                 const tableId = urlParams.get('table');
                 socket.send(JSON.stringify({ type: "startGame", tableId: tableId }));
@@ -356,6 +355,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         };
     }
+
     // Action buttons
     const foldBtn = document.getElementById("fold-btn");
     const callBtn = document.getElementById("call-btn");
@@ -377,7 +377,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     if (checkBtn) {
         checkBtn.onclick = () => sendAction("check");
+        //   ✅   Send check action when clicked
     }
+
     //  ✅  tableId parameter added
     function sendAction(action, amount = null) {
     if (socket.readyState !== WebSocket.OPEN) return;
