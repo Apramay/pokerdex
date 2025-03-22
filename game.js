@@ -62,11 +62,11 @@ const messageDisplay = document.getElementById("message");
 // const gameStates = new Map();
 let currentTableId = null;
 
-function updateUI(gameState) {
-    //  ✅  Use table-specific state if available
-    // const gameState = gameStates.get(tableId);
-    if (!gameState || !gameState.players) {
-        console.warn(" ⚠️  No game state found for table:");
+function updateUI(tableId) {
+    const gameState = gameStates.get(tableId);
+
+    if (!gameState || !gameState.players || !Array.isArray(gameState.players)) {
+        console.warn("⚠️ No valid game state found for table:", tableId);
         return;
     }
 
@@ -74,7 +74,13 @@ function updateUI(gameState) {
 
     if (!playersContainer) return;
     playersContainer.innerHTML = "";
-    players.forEach((player, index) => {
+
+    gameState.players.forEach((player, index) => {
+        if (!player || !player.name) {
+            console.warn("⚠️ Invalid player data:", player);
+            return; 
+        }
+
         const playerDiv = document.createElement("div");
         playerDiv.classList.add("player");
         let dealerIndicator = index === dealerIndex ? "D " : "";
@@ -84,13 +90,13 @@ function updateUI(gameState) {
         if (index === (dealerIndex + 1) % players.length) blindIndicator = "SB ";
         if (index === (dealerIndex + 2) % players.length) blindIndicator = "BB ";
 
-        let displayedHand = player.name === players[currentPlayerIndex].name
+        let displayedHand = player.name === gameState.players[currentPlayerIndex]?.name
             ? displayHand(player.hand)
             : `<div class="card"><img src="https://apramay.github.io/pokerdex/cards/back.jpg" 
     alt="Card Back" style="width: 100px; height: auto;"></div>`;
         playerDiv.innerHTML = `
          
-    <span class="math-inline">\{dealerIndicator\}</span>{blindIndicator}<span class="math-inline">\{currentPlayerIndicator\}</span>{player.name}: Tokens: ${player.tokens}<br>
+    ${dealerIndicator}${blindIndicator}${currentPlayerIndicator}${player.name}: Tokens: ${player.tokens}<br>
             Hand: ${displayedHand}
         `;
         playersContainer.appendChild(playerDiv);
@@ -108,12 +114,12 @@ function updateUI(gameState) {
         messageDisplay.textContent = `It's ${players[currentPlayerIndex]?.name}'s turn.`;
     }
     const playerName = sessionStorage.getItem("playerName");
-    //  ✅  Enable buttons **only** for the current player
     const isCurrentPlayer = players[currentPlayerIndex]?.name === playerName;
     document.querySelectorAll("#action-buttons button").forEach(button => {
         button.disabled = !isCurrentPlayer;
     });
 }
+
 
 let actionHistory =[] ;
 function updateActionHistory(actionText) {
