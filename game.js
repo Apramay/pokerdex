@@ -408,5 +408,76 @@ document.addEventListener("DOMContentLoaded", function () {
         socket.send(JSON.stringify({ type: "getGameState", tableId }));
     }, 500);
 }
+// Add this utility function near the top or bottom of your file
+function getHandDescription(hand) {
+    const ranksOrder = "23456789TJQKA";
+    const ranks = hand.map(card => card.rank);
+    const suits = hand.map(card => card.suit);
+    const rankValues = ranks.map(r => ranksOrder.indexOf(r[0])).sort((a, b) => a - b);
+    
+    const isFlush = suits.every(s => s === suits[0]);
+    const isStraight = rankValues.every((v, i, arr) => i === 0 || v === arr[i - 1] + 1);
+
+    if (isStraight && isFlush) {
+        return `a straight flush, ${ranks[0]} through ${ranks[ranks.length - 1]}`;
+    }
+    if (isFlush) return `a flush with high card ${ranks[ranks.length - 1]}`;
+    if (isStraight) return `a straight, ${ranks[0]} through ${ranks[ranks.length - 1]}`;
+    if (hasFourOfAKind(ranks)) return `four of a kind, ${findNOfAKind(ranks, 4)}`;
+    if (hasFullHouse(ranks)) return `a full house`;
+    if (hasThreeOfAKind(ranks)) return `three of a kind, ${findNOfAKind(ranks, 3)}`;
+    if (hasTwoPair(ranks)) return `two pair`;
+    if (hasPair(ranks)) return `a pair of ${findNOfAKind(ranks, 2)}`;
+
+    return `high card ${ranks[ranks.length - 1]}`;
+}
+
+function findNOfAKind(ranks, n) {
+    const counts = {};
+    ranks.forEach(r => counts[r] = (counts[r] || 0) + 1);
+    for (const rank in counts) {
+        if (counts[rank] === n) return rank;
+    }
+    return null;
+}
+function hasPair(ranks) {
+    return ranks.filter((v, i, a) => a.indexOf(v) !== i).length >= 2;
+}
+function hasTwoPair(ranks) {
+    const pairs = new Set();
+    const seen = new Set();
+    for (const r of ranks) {
+        if (seen.has(r)) pairs.add(r);
+        else seen.add(r);
+    }
+    return pairs.size >= 2;
+}
+function hasThreeOfAKind(ranks) {
+    return ranks.filter((v, i, a) => a.filter(x => x === v).length === 3).length >= 3;
+}
+function hasFourOfAKind(ranks) {
+    return ranks.filter((v, i, a) => a.filter(x => x === v).length === 4).length >= 4;
+}
+function hasFullHouse(ranks) {
+    const counts = {};
+    ranks.forEach(r => counts[r] = (counts[r] || 0) + 1);
+    let hasThree = false, hasTwo = false;
+    for (const c of Object.values(counts)) {
+        if (c === 3) hasThree = true;
+        if (c === 2) hasTwo = true;
+    }
+    return hasThree && hasTwo;
+}
+
+// Modify the showdown handler in your WebSocket message logic
+if (data.type === "showdown") {
+    console.log(" 🏆  Showdown results received!");
+    data.winners.forEach(winner => {
+        const handDescription = getHandDescription(winner.hand);
+        console.log(` 🎉  ${winner.playerName} wins with ${handDescription}`);
+        updateActionHistory(`${winner.playerName} wins with ${handDescription}`);
+    });
+    updateUI(tableId);
+}
 
 });
