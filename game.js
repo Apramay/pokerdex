@@ -479,5 +479,132 @@ if (data.type === "showdown") {
     });
     updateUI(tableId);
 }
+// ✅ Combined server.js with hand evaluator and safe UI updates
+
+const WebSocket = require("ws");
+const server = new WebSocket.Server({ port: 8080 });
+
+const gameStates = new Map();
+
+function getHandDescription(hand) {
+    const ranksOrder = "23456789TJQKA";
+    const ranks = hand.map(card => card.rank);
+    const suits = hand.map(card => card.suit);
+    const rankValues = ranks.map(r => ranksOrder.indexOf(r[0])).sort((a, b) => a - b);
+
+    const isFlush = suits.every(s => s === suits[0]);
+    const isStraight = rankValues.every((v, i, arr) => i === 0 || v === arr[i - 1] + 1);
+
+    if (isStraight && isFlush) {
+        return `a straight flush, ${ranks[0]} through ${ranks[ranks.length - 1]}`;
+    }
+    if (isFlush) return `a flush with high card ${ranks[ranks.length - 1]}`;
+    if (isStraight) return `a straight, ${ranks[0]} through ${ranks[ranks.length - 1]}`;
+    if (hasFourOfAKind(ranks)) return `four of a kind, ${findNOfAKind(ranks, 4)}`;
+    if (hasFullHouse(ranks)) return `a full house`;
+    if (hasThreeOfAKind(ranks)) return `three of a kind, ${findNOfAKind(ranks, 3)}`;
+    if (hasTwoPair(ranks)) return `two pair`;
+    if (hasPair(ranks)) return `a pair of ${findNOfAKind(ranks, 2)}`;
+
+    return `high card ${ranks[ranks.length - 1]}`;
+}
+
+function findNOfAKind(ranks, n) {
+    const counts = {};
+    ranks.forEach(r => counts[r] = (counts[r] || 0) + 1);
+    for (const rank in counts) {
+        if (counts[rank] === n) return rank;
+    }
+    return null;
+}
+function hasPair(ranks) {
+    return ranks.filter((v, i, a) => a.indexOf(v) !== i).length >= 2;
+}
+function hasTwoPair(ranks) {
+    const pairs = new Set();
+    const seen = new Set();
+    for (const r of ranks) {
+        if (seen.has(r)) pairs.add(r);
+        else seen.add(r);
+    }
+    return pairs.size >= 2;
+}
+function hasThreeOfAKind(ranks) {
+    return ranks.filter((v, i, a) => a.filter(x => x === v).length === 3).length >= 3;
+}
+function hasFourOfAKind(ranks) {
+    return ranks.filter((v, i, a) => a.filter(x => x === v).length === 4).length >= 4;
+}
+function hasFullHouse(ranks) {
+    const counts = {};
+    ranks.forEach(r => counts[r] = (counts[r] || 0) + 1);
+    let hasThree = false, hasTwo = false;
+    for (const c of Object.values(counts)) {
+        if (c === 3) hasThree = true;
+        if (c === 2) hasTwo = true;
+    }
+    return hasThree && hasTwo;
+}
+
+server.on("connection", socket => {
+    socket.on("message", message => {
+        const data = JSON.parse(message);
+
+        if (data.type === "join") {
+            const { tableId, name } = data;
+            if (!gameStates.has(tableId)) {
+                gameStates.set(tableId, {
+                    players: [],
+                    tableCards: [],
+                    pot: 0,
+                    round: 0,
+                    currentBet: 0,
+                    currentPlayerIndex: 0,
+                    dealerIndex: 0
+                });
+            }
+            const game = gameStates.get(tableId);
+            if (!game.players.find(p => p.name === name)) {
+                game.players.push({ name, tokens: 1000, hand: [] });
+            }
+            broadcast({ type: "updatePlayers", players: game.players, tableId });
+        }
+
+        if (data.type === "showdown") {
+            const { winners, tableId } = data;
+            winners.forEach(winner => {
+                const handDescription = getHandDescription(winner.hand);
+                broadcast({
+                    type: "updateActionHistory",
+                    action: `${winner.playerName} wins with ${handDescription}`,
+                    tableId
+                });
+            });
+            broadcast({ type: "showdown", winners, tableId });
+        }
+
+        if (data.type === "getGameState") {
+            const gameState = gameStates.get(data.tableId);
+            if (gameState) {
+                broadcast({
+                    type: "updateGameState",
+                    ...gameState,
+                    tableId: data.tableId
+                });
+            }
+        }
+    });
+});
+
+function broadcast(msg) {
+    const json = JSON.stringify(msg);
+    server.clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+            client.send(json);
+        }
+    });
+}
+
+console.log("🎉 WebSocket server is running on ws://localhost:8080");
 
 });
