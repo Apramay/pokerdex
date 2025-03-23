@@ -253,10 +253,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 // }
                 // ✅ Update the currentPlayerIndex within the table's state
     
-                    const gameState = gameStates.get(tableId);
-    if (!gameState || !gameState.players) {
-        console.warn("⚠️ No game state found for table:", tableId);
-        return;
                 }
                 let playerIndex = gameState.players.findIndex(p => p.name === data.playerName);
     if (playerIndex !== -1) {
