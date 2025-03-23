@@ -65,10 +65,6 @@ let currentTableId = null;
 function updateUI(tableId) {
     //  ✅  Use table-specific state if available
     const gameState = gameStates.get(tableId);
-if (!gameState || !gameState.players) {
-        console.warn(" ⚠️  No game state found for table:", tableId);
-        return;
-    }
 
     const { players, tableCards, pot, round, currentBet, currentPlayerIndex, dealerIndex } = gameState;
 
