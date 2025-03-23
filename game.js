@@ -253,7 +253,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 // }
                 // ✅ Update the currentPlayerIndex within the table's state
     
-                }
+                
                 let playerIndex = gameState.players.findIndex(p => p.name === data.playerName);
     if (playerIndex !== -1) {
         gameState.currentPlayerIndex = playerIndex;
