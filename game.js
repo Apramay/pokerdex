@@ -75,13 +75,13 @@ function updateUI(tableId) {
     gameState.players.forEach((player, index) => {
         const playerDiv = document.createElement("div");
         playerDiv.classList.add("player");
-        let dealerIndicator = index === gameState.dealerIndex ? "D " : "";
+        let dealerIndicator = (index === gameState.dealerIndex && player.tokens > 0) ? "D " : "";
         let currentPlayerIndicator = index === gameState.currentPlayerIndex ? " ➡️  " : "";
         let blindIndicator = "";
 
-        if (index === (gameState.dealerIndex + 1) % gameState.players.length) blindIndicator = "SB ";
+        if (index === (gameState.dealerIndex + 1) % gameState.players.length && player.tokens > 0) blindIndicator = "SB ";
 
-        if (index === (gameState.dealerIndex + 2) % gameState.players.length) blindIndicator = "BB ";
+        if (index === (gameState.dealerIndex + 2) % gameState.players.length && player.tokens > 0) blindIndicator = "BB ";
             let displayedHand = player.name === gameState.players[gameState.currentPlayerIndex].name
         ? displayHand(player.hand)
             : `<div class="card"><img src="https://apramay.github.io/pokerdex/cards/back.jpg" 
