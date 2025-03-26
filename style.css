@@ -1,3 +1,4 @@
+
 /* Vegas-style Poker Table Look */
 body {
     font-family: 'Montserrat', sans-serif;
@@ -27,15 +28,15 @@ h1 {
     border: 5px solid gold;
 }
 
-/* Poker Table */
+/* Poker Table - Oval Style */
 #table {
     text-align: center;
-    padding: 20px;
-    border-radius: 15px;
-    background: url('https://upload.wikimedia.org/wikipedia/commons/d/d6/Poker_table_layout.svg') no-repeat center;
-    background-size: cover;
-    border: 3px solid gold;
-    box-shadow: 0px 0px 15px rgba(255, 215, 0, 0.7);
+    padding: 60px 40px;
+    border-radius: 50% / 30%;
+    background: radial-gradient(ellipse at center, #165016 0%, #0b260b 100%);
+    border: 5px solid gold;
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+    margin: auto;
 }
 
 /* Community Cards */
@@ -154,32 +155,3 @@ h1 {
     border-radius: 5px;
     font-weight: bold;
 }
-
-/* Position players absolutely around the oval table */
-#players {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    pointer-events: none;
-}
-
-.player {
-    position: absolute;
-    width: 150px;
-    height: auto;
-    pointer-events: auto;
-}
-
-/* Player positions (up to 10) */
-.player.pos-1  { top: -40px; left: 50%; transform: translateX(-50%); }
-.player.pos-2  { top: 20%; left: 85%; transform: translate(-50%, -50%); }
-.player.pos-3  { top: 50%; left: 100%; transform: translate(-100%, -50%); }
-.player.pos-4  { bottom: 20%; left: 85%; transform: translate(-50%, 50%); }
-.player.pos-5  { bottom: -40px; left: 50%; transform: translateX(-50%); }
-.player.pos-6  { bottom: 20%; left: 15%; transform: translate(-50%, 50%); }
-.player.pos-7  { top: 50%; left: 0%; transform: translate(0%, -50%); }
-.player.pos-8  { top: 20%; left: 15%; transform: translate(-50%, -50%); }
-.player.pos-9  { top: 5%; left: 30%; transform: translate(-50%, -50%); }
-.player.pos-10 { top: 5%; left: 70%; transform: translate(-50%, -50%); }
