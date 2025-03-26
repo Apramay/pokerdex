@@ -1,4 +1,4 @@
-/* Vegas-style Poker Table Look */
+/* Vegas-style Poker Table Look - With Circular Players (Based on Provided HTML) */
 body {
     font-family: 'Montserrat', sans-serif;
     background-color: #124116; /* Dark green casino background */
@@ -17,25 +17,34 @@ h1 {
 
 /* Game Container */
 #game-container {
-    width: 90%;
-    max-width: 1200px;
+    width: 95%;
+    max-width: 1400px;
+    height: 700px; /* Adjust height as needed for the circular layout */
     margin: 20px auto;
     padding: 20px;
     border-radius: 15px;
     background: radial-gradient(circle, #165016, #0b260b);
     box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.8);
     border: 5px solid gold;
+    position: relative; /* To contain the absolutely positioned table and players */
 }
 
 /* Poker Table */
 #table {
-    text-align: center;
-    padding: 20px;
-    border-radius: 15px;
+    position: absolute; /* Center the table within the game container */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 350px; /* Adjust size as needed */
+    height: 350px; /* Adjust size as needed */
+    border-radius: 50%;
     background: url('https://upload.wikimedia.org/wikipedia/commons/d/d6/Poker_table_layout.svg') no-repeat center;
     background-size: cover;
     border: 3px solid gold;
     box-shadow: 0px 0px 15px rgba(255, 215, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* Community Cards */
@@ -44,6 +53,10 @@ h1 {
     justify-content: center;
     gap: 15px;
     margin: 20px 0;
+    position: absolute; /* Position above the table */
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 #community-cards div img,
@@ -54,25 +67,6 @@ h1 {
     box-shadow: 2px 2px 10px rgba(255, 215, 0, 0.6);
 }
 
-/* Player Section */
-#players {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 20px;
-}
-
-.player {
-    border: 2px solid gold;
-    padding: 15px;
-    width: 220px;
-    text-align: center;
-    border-radius: 10px;
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    box-shadow: 0px 0px 10px rgba(255, 215, 0, 0.5);
-}
 
 /* Buttons */
 #action-buttons button,
@@ -113,11 +107,16 @@ h1 {
     font-size: 20px;
     font-weight: bold;
     text-shadow: 2px 2px 5px gold;
+    position: absolute; /* You had no positioning, so I'm adding absolute for consistency within #game-container */
+    top: 10px;
+    left: 10px;
+    text-align: left; /* Adjust as needed */
 }
 
 /* Player Input */
 #player-input {
     margin-bottom: 20px;
+    text-align: center; /* Ensure input and button are centered */
 }
 
 /* Action History Box */
@@ -155,3 +154,8 @@ h1 {
     font-weight: bold;
 }
 
+/* Action Buttons */
+#action-buttons {
+    text-align: center; /* Center the action buttons */
+    margin-top: 20px; /* Add some space above the buttons */
+}
