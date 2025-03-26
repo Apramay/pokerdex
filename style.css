@@ -9,38 +9,37 @@ body {
 }
 
 h1 {
-    font-size: 1.5rem; /* Reduced size */
+    font-size: 3rem;
     color: gold;
     text-shadow: 2px 2px 8px red;
-    margin-top: 10px; /* Reduced margin */
+    margin-top: 20px;
 }
 
 /* Game Container */
 #game-container {
-    width: 90%;
-    max-width: 650px; /* Reduced max width */
-    margin: 10px auto; /* Reduced margin */
-    padding: 10px; /* Reduced padding */
-    border-radius: 15px;
+    width: 45%;
+    max-width: 650px; /* Max width to fit the larger table */
+    margin: 10px auto;
+    padding: 10px;
+    border-radius: 8px;
     background: radial-gradient(circle, #165016, #0b260b);
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.8);
-    border: 3px solid gold;
+    border: 5px solid gold;
 }
 
 /* Poker Table */
 #table {
     text-align: center;
-    padding: 20px; /* Reduced padding */
-    border-radius: 50%; /* Make the table a circle */
-    background: url('https://upload.wikimedia.org/wikipedia/commons/d/d6/Poker_table_layout.svg') no-repeat center;
+    padding: 20px; /* Increased padding for the table */
+    border-radius: 8px;
     background-size: cover;
     border: 3px solid gold;
-    box-shadow: 0px 0px 10px rgba(255, 215, 0, 0.7);
+    box-shadow: 0px 0px 8px rgba(255, 215, 0, 0.7);
     position: relative;
     width: 30vw; /* Reduced table width */
     height: 30vw; /* Reduced table height */
-    min-width: 400px; /* Reduced minimum width */
-    min-height: 400px; /* Reduced minimum height */
+    min-width: 400px; /* Minimum width for responsive layout */
+    min-height: 400px; /* Minimum height for responsive layout */
 }
 
 /* Player Section */
@@ -49,8 +48,8 @@ h1 {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 100%;
-    height: 100%;
+    width: 50%;
+    height: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -61,9 +60,9 @@ h1 {
 /* Position players around the table */
 .player {
     position: absolute;
-    width: 110px; /* Reduced player size */
+    width: 110px; /* Slightly smaller player size */
     text-align: center;
-    padding: 10px; /* Reduced padding */
+    padding: 10px; /* Added more padding for players */
     border-radius: 12px;
     background: rgba(0, 0, 0, 0.8);
     color: white;
@@ -73,64 +72,64 @@ h1 {
 
 /* Dynamically position players around the table */
 #players .player:nth-child(1) {
-    transform: rotate(0deg) translateX(100%) rotate(-0deg);
+    transform: rotate(0deg) translateX(200%) rotate(-0deg);
 }
 #players .player:nth-child(2) {
-    transform: rotate(36deg) translateX(100%) rotate(-36deg);
+    transform: rotate(36deg) translateX(200%) rotate(-36deg);
 }
 #players .player:nth-child(3) {
-    transform: rotate(72deg) translateX(100%) rotate(-72deg);
+    transform: rotate(72deg) translateX(200%) rotate(-72deg);
 }
 #players .player:nth-child(4) {
-    transform: rotate(108deg) translateX(100%) rotate(-108deg);
+    transform: rotate(108deg) translateX(200%) rotate(-108deg);
 }
 #players .player:nth-child(5) {
-    transform: rotate(144deg) translateX(100%) rotate(-144deg);
+    transform: rotate(144deg) translateX(200%) rotate(-144deg);
 }
 #players .player:nth-child(6) {
-    transform: rotate(180deg) translateX(100%) rotate(-180deg);
+    transform: rotate(180deg) translateX(200%) rotate(-180deg);
 }
 #players .player:nth-child(7) {
-    transform: rotate(216deg) translateX(100%) rotate(-216deg);
+    transform: rotate(216deg) translateX(200%) rotate(-216deg);
 }
 #players .player:nth-child(8) {
-    transform: rotate(252deg) translateX(100%) rotate(-252deg);
+    transform: rotate(252deg) translateX(200%) rotate(-252deg);
 }
 #players .player:nth-child(9) {
-    transform: rotate(288deg) translateX(100%) rotate(-288deg);
+    transform: rotate(288deg) translateX(200%) rotate(-288deg);
 }
 #players .player:nth-child(10) {
-    transform: rotate(324deg) translateX(100%) rotate(-324deg);
+    transform: rotate(324deg) translateX(200%) rotate(-324deg);
 }
 
 /* Community Cards */
 #community-cards {
     display: flex;
     justify-content: center;
-    gap: 7px; /* Reduced gap */
-    margin: 10px 0; /* Reduced margin */
+    gap: 8px;
+    margin: 10px 0;
 }
 
 #community-cards div img,
 .player img {
-    width: 40px; /* Reduced size */
+    width: 38px;
     height: auto;
-    border-radius: 5px;
-    box-shadow: 2px 2px 5px rgba(255, 215, 0, 0.6);
+    border-radius: 3px;
+    box-shadow: 1px 1px 5px rgba(255, 215, 0, 0.6);
 }
 
 /* Buttons */
 #action-buttons button,
 #player-input button {
-    padding: 5px 10px; /* Reduced padding */
-    margin: 5px; /* Reduced margin */
+    padding: 5px 10px;
+    margin: 4px;
     cursor: pointer;
     background: linear-gradient(to bottom, #d4af37, #b8860b);
-    border: 2px solid gold;
+    border: 1px solid gold;
     color: white;
-    font-size: 14px; /* Reduced font size */
+    font-size: 9px;
     font-weight: bold;
-    border-radius: 8px;
+    border-radius: 4px;
     transition: all 0.3s ease-in-out;
 }
 
@@ -138,53 +137,53 @@ h1 {
 #player-input button:hover {
     background: gold;
     color: black;
-    box-shadow: 0px 0px 8px gold;
+    box-shadow: 0px 0px 5px gold;
 }
 
 /* Input Fields */
 #action-buttons input[type="number"],
 #player-input input[type="text"] {
-    padding: 5px; /* Reduced padding */
-    margin: 5px;
-    border: 2px solid gold;
-    border-radius: 5px;
+    padding: 5px;
+    margin: 2px;
+    border: 1px solid gold;
+    border-radius: 3px;
     background-color: white;
     color: black;
-    font-size: 14px; /* Reduced font size */
+    font-size: 8px;
 }
 
 /* Message Box */
 #message {
-    font-size: 16px; /* Reduced font size */
+    font-size: 10px;
     font-weight: bold;
-    text-shadow: 1px 1px 5px gold;
+    text-shadow: 1px 1px 3px gold;
 }
 
 /* Player Input */
 #player-input {
-    margin-bottom: 10px; /* Reduced margin */
+    margin-bottom: 10px;
 }
 
 /* Action History Box */
 #action-history-container {
     position: absolute;
-    top: 50px; /* Reduced top margin */
-    right: 10px; /* Reduced right margin */
-    width: 125px; /* Reduced width */
-    padding: 10px; /* Reduced padding */
+    top: 50px;
+    right: 10px;
+    width: 125px;
+    padding: 8px;
     background: rgba(0, 0, 0, 0.8);
     color: white;
-    font-size: 12px; /* Reduced font size */
-    border-radius: 8px;
-    border: 2px solid gold;
-    box-shadow: 0px 0px 8px rgba(255, 215, 0, 0.7);
+    font-size: 8px;
+    border-radius: 4px;
+    border: 1px solid gold;
+    box-shadow: 0px 0px 5px rgba(255, 215, 0, 0.7);
 }
 
 #action-history-container h3 {
     margin-top: 0;
     text-align: center;
     color: gold;
-    text-shadow: 1px 1px 5px red;
+    text-shadow: 1px 1px 3px red;
 }
 
 #action-history {
@@ -193,9 +192,9 @@ h1 {
 }
 
 #action-history li {
-    padding: 4px; /* Reduced padding */
-    margin: 3px 0; /* Reduced margin */
+    padding: 4px;
+    margin: 3px 0;
     background: rgba(255, 215, 0, 0.3);
-    border-radius: 5px;
+    border-radius: 3px;
     font-weight: bold;
 }
