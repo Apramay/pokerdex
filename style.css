@@ -72,34 +72,34 @@ h1 {
 
 /* Dynamically position players around the table */
 #players .player:nth-child(1) {
-    transform: rotate(0deg) translateX(200%) rotate(-0deg);
+    transform: rotate(0deg) translateX(100%) rotate(-0deg);
 }
 #players .player:nth-child(2) {
-    transform: rotate(36deg) translateX(200%) rotate(-36deg);
+    transform: rotate(36deg) translateX(100%) rotate(-36deg);
 }
 #players .player:nth-child(3) {
-    transform: rotate(72deg) translateX(200%) rotate(-72deg);
+    transform: rotate(72deg) translateX(100%) rotate(-72deg);
 }
 #players .player:nth-child(4) {
-    transform: rotate(108deg) translateX(200%) rotate(-108deg);
+    transform: rotate(108deg) translateX(100%) rotate(-108deg);
 }
 #players .player:nth-child(5) {
-    transform: rotate(144deg) translateX(200%) rotate(-144deg);
+    transform: rotate(144deg) translateX(100%) rotate(-144deg);
 }
 #players .player:nth-child(6) {
-    transform: rotate(180deg) translateX(200%) rotate(-180deg);
+    transform: rotate(180deg) translateX(100%) rotate(-180deg);
 }
 #players .player:nth-child(7) {
-    transform: rotate(216deg) translateX(200%) rotate(-216deg);
+    transform: rotate(216deg) translateX(100%) rotate(-216deg);
 }
 #players .player:nth-child(8) {
-    transform: rotate(252deg) translateX(200%) rotate(-252deg);
+    transform: rotate(252deg) translateX(100%) rotate(-252deg);
 }
 #players .player:nth-child(9) {
-    transform: rotate(288deg) translateX(200%) rotate(-288deg);
+    transform: rotate(288deg) translateX(100%) rotate(-288deg);
 }
 #players .player:nth-child(10) {
-    transform: rotate(324deg) translateX(200%) rotate(-324deg);
+    transform: rotate(324deg) translateX(100%) rotate(-324deg);
 }
 
 /* Community Cards */
