@@ -300,8 +300,22 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         } catch (error) {
             console.error(" ❌  Error parsing message:", error);
-        }
-    };
+           socket.on("handResult", (result) => {
+  const { potWinners } = result;
+  const messageContainer = document.getElementById("messages");
+  if (!messageContainer) return;
+
+  potWinners.forEach((pot, index) => {
+    const winnerNames = pot.winners.map(w => w.name).join(", ");
+    const amount = pot.amount;
+    const potType = index === 0 ? "the main pot" : `side pot #${index}`;
+
+    const msgElem = document.createElement("div");
+    msgElem.classList.add("message");
+    msgElem.innerText = `🏆 ${winnerNames} won ${amount} chips from ${potType}`;
+    messageContainer.appendChild(msgElem);
+  });
+});
 
     function sendShowHideDecision(choice) {
         if (!socket || socket.readyState !== WebSocket.OPEN) {
