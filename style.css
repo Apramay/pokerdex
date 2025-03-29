@@ -16,7 +16,6 @@ h1 {
     margin-top: 20px;
 }
 
-/* Game Container */
 #game-container {
     width: 90%;
     max-width: 1200px;
@@ -28,7 +27,6 @@ h1 {
     border: 2px solid #2C2C2E; /* Graphite Gray */
 }
 
-/* Poker Table */
 #table {
     text-align: center;
     padding: 20px;
@@ -39,7 +37,6 @@ h1 {
     box-shadow: 0px 0px 15px rgba(51, 153, 255, 0.5);
 }
 
-/* Community Cards */
 #community-cards {
     display: flex;
     justify-content: center;
@@ -55,7 +52,6 @@ h1 {
     box-shadow: 2px 2px 10px rgba(51, 153, 255, 0.6);
 }
 
-/* Player Section */
 #players {
     display: flex;
     flex-wrap: wrap;
@@ -75,7 +71,6 @@ h1 {
     box-shadow: 0px 0px 10px rgba(51, 153, 255, 0.5);
 }
 
-/* Buttons */
 #action-buttons button,
 #player-input button {
     padding: 10px 20px;
@@ -97,7 +92,6 @@ h1 {
     box-shadow: 0px 0px 10px #3399FF;
 }
 
-/* Input Fields */
 #action-buttons input[type="number"],
 #player-input input[type="text"] {
     padding: 10px;
@@ -109,7 +103,6 @@ h1 {
     font-size: 16px;
 }
 
-/* Message Box */
 #message {
     font-size: 20px;
     font-weight: bold;
@@ -117,12 +110,10 @@ h1 {
     text-shadow: 2px 2px 5px #2C2C2E;
 }
 
-/* Player Input */
 #player-input {
     margin-bottom: 20px;
 }
 
-/* Action History Box */
 #action-history-container {
     position: absolute;
     top: 100px;
@@ -157,7 +148,6 @@ h1 {
     font-weight: bold;
 }
 
-/* Critical Action Buttons (e.g., Fold, All-In) */
 .critical {
     background-color: #FF3B30 !important;
     border-color: #FF3B30 !important;
