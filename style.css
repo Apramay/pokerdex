@@ -28,14 +28,18 @@ h1 {
 }
 
 #table {
-    text-align: center;
-    padding: 20px;
-    border-radius: 15px;
-background: url('https://raw.githubusercontent.com/Apramay/pokerdex/main/Pokerdex-table.png') no-repeat center center;
-    background-size: cover;
-    border: 2px solid #3399FF;
-    box-shadow: 0px 0px 15px rgba(51, 153, 255, 0.5);
-    min-height: 300px;
+    position: relative;
+    width: 800px;
+    height: 500px;
+    margin: 0 auto;
+    background: url('https://raw.githubusercontent.com/Apramay/pokerdex/main/Pokerdex-table.png') no-repeat center center;
+    background-size: contain;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    flex-shrink: 0;
+    overflow: hidden;
+    padding: 0;
 }
 
 #community-cards {
