@@ -1,8 +1,9 @@
-/* Vegas-style Poker Table Look */
+/* PokerDEX Modern Style */
+
 body {
     font-family: 'Montserrat', sans-serif;
-    background-color: #124116; /* Dark green casino background */
-    color: white;
+    background-color: #121212; /* Rich Black */
+    color: #F5F5F5; /* Off-White */
     text-align: center;
     margin: 0;
     padding: 0;
@@ -10,8 +11,8 @@ body {
 
 h1 {
     font-size: 3rem;
-    color: gold;
-    text-shadow: 2px 2px 8px red;
+    color: #3399FF; /* Electric Blue */
+    text-shadow: 2px 2px 8px #2C2C2E; /* Graphite Shadow */
     margin-top: 20px;
 }
 
@@ -22,9 +23,9 @@ h1 {
     margin: 20px auto;
     padding: 20px;
     border-radius: 15px;
-    background: radial-gradient(circle, #165016, #0b260b);
+    background-color: #1e1e1e; /* Slightly lighter than Rich Black */
     box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.8);
-    border: 5px solid gold;
+    border: 2px solid #2C2C2E; /* Graphite Gray */
 }
 
 /* Poker Table */
@@ -32,10 +33,10 @@ h1 {
     text-align: center;
     padding: 20px;
     border-radius: 15px;
-    background: url('https://upload.wikimedia.org/wikipedia/commons/d/d6/Poker_table_layout.svg') no-repeat center;
+    background-color: #2C2C2E; /* Graphite Gray */
     background-size: cover;
-    border: 3px solid gold;
-    box-shadow: 0px 0px 15px rgba(255, 215, 0, 0.7);
+    border: 2px solid #3399FF;
+    box-shadow: 0px 0px 15px rgba(51, 153, 255, 0.5);
 }
 
 /* Community Cards */
@@ -51,7 +52,7 @@ h1 {
     width: 75px;
     height: auto;
     border-radius: 5px;
-    box-shadow: 2px 2px 10px rgba(255, 215, 0, 0.6);
+    box-shadow: 2px 2px 10px rgba(51, 153, 255, 0.6);
 }
 
 /* Player Section */
@@ -64,14 +65,14 @@ h1 {
 }
 
 .player {
-    border: 2px solid gold;
+    border: 2px solid #3399FF;
     padding: 15px;
     width: 220px;
     text-align: center;
     border-radius: 10px;
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    box-shadow: 0px 0px 10px rgba(255, 215, 0, 0.5);
+    background: #1e1e1e;
+    color: #F5F5F5;
+    box-shadow: 0px 0px 10px rgba(51, 153, 255, 0.5);
 }
 
 /* Buttons */
@@ -80,9 +81,9 @@ h1 {
     padding: 10px 20px;
     margin: 8px;
     cursor: pointer;
-    background: linear-gradient(to bottom, #d4af37, #b8860b);
-    border: 2px solid gold;
-    color: white;
+    background: linear-gradient(to bottom, #3399FF, #1e7fd1);
+    border: 2px solid #3399FF;
+    color: #fff;
     font-size: 18px;
     font-weight: bold;
     border-radius: 8px;
@@ -91,9 +92,9 @@ h1 {
 
 #action-buttons button:hover,
 #player-input button:hover {
-    background: gold;
-    color: black;
-    box-shadow: 0px 0px 10px gold;
+    background: #1e7fd1;
+    color: #F5F5F5;
+    box-shadow: 0px 0px 10px #3399FF;
 }
 
 /* Input Fields */
@@ -101,10 +102,10 @@ h1 {
 #player-input input[type="text"] {
     padding: 10px;
     margin: 5px;
-    border: 2px solid gold;
+    border: 2px solid #A1A1AA; /* Cool Gray */
     border-radius: 5px;
-    background-color: white;
-    color: black;
+    background-color: #F5F5F5;
+    color: #121212;
     font-size: 16px;
 }
 
@@ -112,7 +113,8 @@ h1 {
 #message {
     font-size: 20px;
     font-weight: bold;
-    text-shadow: 2px 2px 5px gold;
+    color: #3399FF;
+    text-shadow: 2px 2px 5px #2C2C2E;
 }
 
 /* Player Input */
@@ -127,19 +129,19 @@ h1 {
     right: 20px;
     width: 250px;
     padding: 15px;
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
+    background: #2C2C2E;
+    color: #F5F5F5;
     font-size: 16px;
     border-radius: 8px;
-    border: 2px solid gold;
-    box-shadow: 0px 0px 10px rgba(255, 215, 0, 0.7);
+    border: 2px solid #3399FF;
+    box-shadow: 0px 0px 10px rgba(51, 153, 255, 0.7);
 }
 
 #action-history-container h3 {
     margin-top: 0;
     text-align: center;
-    color: gold;
-    text-shadow: 1px 1px 5px red;
+    color: #3399FF;
+    text-shadow: 1px 1px 5px #121212;
 }
 
 #action-history {
@@ -150,7 +152,15 @@ h1 {
 #action-history li {
     padding: 8px;
     margin: 5px 0;
-    background: rgba(255, 215, 0, 0.3);
+    background: rgba(51, 153, 255, 0.15);
     border-radius: 5px;
     font-weight: bold;
+}
+
+/* Critical Action Buttons (e.g., Fold, All-In) */
+.critical {
+    background-color: #FF3B30 !important;
+    border-color: #FF3B30 !important;
+    box-shadow: 0 0 10px rgba(255, 59, 48, 0.7) !important;
+    color: white !important;
 }
